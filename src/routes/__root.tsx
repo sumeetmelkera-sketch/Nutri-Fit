@@ -130,7 +130,7 @@ function RootComponent() {
       <NutriFitProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
-        <Toaster position="top-center" />
+        <Toaster theme="dark" position="top-center" offset={12} />
       </NutriFitProvider>
     </QueryClientProvider>
   );
