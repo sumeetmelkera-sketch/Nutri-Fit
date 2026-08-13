@@ -10,33 +10,115 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NutritionRouteImport } from './routes/nutrition'
+import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as TrainerRouteImport } from './routes/trainer'
+import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as WorkoutIndexRouteImport } from './routes/workout.index'
+import { Route as WorkoutSessionRouteImport } from './routes/workout.session'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NutritionRoute = NutritionRouteImport.update({
+  id: '/nutrition',
+  path: '/nutrition',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrainerRoute = TrainerRouteImport.update({
+  id: '/trainer',
+  path: '/trainer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkoutIndexRoute = WorkoutIndexRouteImport.update({
+  id: '/workout/',
+  path: '/workout/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkoutSessionRoute = WorkoutSessionRouteImport.update({
+  id: '/workout/session',
+  path: '/workout/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/nutrition': typeof NutritionRoute
+  '/progress': typeof ProgressRoute
+  '/trainer': typeof TrainerRoute
+  '/welcome': typeof WelcomeRoute
+  '/workout/session': typeof WorkoutSessionRoute
+  '/workout/': typeof WorkoutIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/nutrition': typeof NutritionRoute
+  '/progress': typeof ProgressRoute
+  '/trainer': typeof TrainerRoute
+  '/welcome': typeof WelcomeRoute
+  '/workout/session': typeof WorkoutSessionRoute
+  '/workout': typeof WorkoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/nutrition': typeof NutritionRoute
+  '/progress': typeof ProgressRoute
+  '/trainer': typeof TrainerRoute
+  '/welcome': typeof WelcomeRoute
+  '/workout/session': typeof WorkoutSessionRoute
+  '/workout/': typeof WorkoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/nutrition'
+    | '/progress'
+    | '/trainer'
+    | '/welcome'
+    | '/workout/session'
+    | '/workout/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/nutrition'
+    | '/progress'
+    | '/trainer'
+    | '/welcome'
+    | '/workout/session'
+    | '/workout'
+  id:
+    | '__root__'
+    | '/'
+    | '/nutrition'
+    | '/progress'
+    | '/trainer'
+    | '/welcome'
+    | '/workout/session'
+    | '/workout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  NutritionRoute: typeof NutritionRoute
+  ProgressRoute: typeof ProgressRoute
+  TrainerRoute: typeof TrainerRoute
+  WelcomeRoute: typeof WelcomeRoute
+  WorkoutSessionRoute: typeof WorkoutSessionRoute
+  WorkoutIndexRoute: typeof WorkoutIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +130,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nutrition': {
+      id: '/nutrition'
+      path: '/nutrition'
+      fullPath: '/nutrition'
+      preLoaderRoute: typeof NutritionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trainer': {
+      id: '/trainer'
+      path: '/trainer'
+      fullPath: '/trainer'
+      preLoaderRoute: typeof TrainerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workout/': {
+      id: '/workout/'
+      path: '/workout'
+      fullPath: '/workout/'
+      preLoaderRoute: typeof WorkoutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workout/session': {
+      id: '/workout/session'
+      path: '/workout/session'
+      fullPath: '/workout/session'
+      preLoaderRoute: typeof WorkoutSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  NutritionRoute: NutritionRoute,
+  ProgressRoute: ProgressRoute,
+  TrainerRoute: TrainerRoute,
+  WelcomeRoute: WelcomeRoute,
+  WorkoutSessionRoute: WorkoutSessionRoute,
+  WorkoutIndexRoute: WorkoutIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
