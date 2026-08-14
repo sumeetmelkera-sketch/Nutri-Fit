@@ -171,36 +171,50 @@ function PlanBody() {
                   </IconBtn>
                 </div>
               </div>
-              <div className="grid grid-cols-4 gap-2">
-                {(
-                  [
-                    ["sets", "Sets"],
-                    ["reps", "Reps"],
-                    ["weight", "Kg"],
-                    ["rest", "Rest s"],
-                  ] as const
-                ).map(([key, label]) => (
-                  <label key={key} className="rounded-xl bg-elevated px-2.5 py-1.5">
-                    <span className="block text-[9px] uppercase tracking-widest text-muted-foreground">
-                      {label}
-                    </span>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      value={String(ex[key])}
-                      onChange={(e) =>
-                        setDayValue({
-                          ...current,
-                          exercises: current.exercises.map((x) =>
-                            x.id === ex.id ? { ...x, [key]: Math.max(0, +e.target.value || 0) } : x,
-                          ),
-                        })
-                      }
-                      className="w-full bg-transparent text-sm font-bold outline-none"
-                    />
-                  </label>
-                ))}
-              </div>
+              {(() => {
+                const mode = ex.mode ?? exerciseMode(ex.name);
+                const fields: [keyof PlanExercise, string][] =
+                  mode === "time"
+                    ? [
+                        ["sets", "Sets"],
+                        ["seconds", "Seconds"],
+                        ["rest", "Rest s"],
+                      ]
+                    : [
+                        ["sets", "Sets"],
+                        ["reps", "Reps"],
+                        ["weight", "Kg"],
+                        ["rest", "Rest s"],
+                      ];
+                return (
+                  <div className={cn("grid gap-2", mode === "time" ? "grid-cols-3" : "grid-cols-4")}>
+                    {fields.map(([key, label]) => (
+                      <label key={String(key)} className="rounded-xl bg-elevated px-2.5 py-1.5">
+                        <span className="block text-[9px] uppercase tracking-widest text-muted-foreground">
+                          {label}
+                        </span>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          value={String(ex[key] ?? (key === "seconds" ? 30 : 0))}
+                          onChange={(e) =>
+                            setDayValue({
+                              ...current,
+                              exercises: current.exercises.map((x) =>
+                                x.id === ex.id
+                                  ? { ...x, [key]: Math.max(0, +e.target.value || 0) }
+                                  : x,
+                              ),
+                            })
+                          }
+                          className="w-full bg-transparent text-sm font-bold outline-none"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                );
+              })()}
+
             </Card>
           ))}
         </div>
