@@ -6,6 +6,7 @@ import { Card, Screen } from "@/components/nf/Shell";
 import { finishWorkout } from "@/lib/nutrifit.functions";
 import { useNutriFit } from "@/lib/nf/store";
 import { getTrainer } from "@/lib/nf/trainers";
+import { exerciseMode, type ExerciseMode } from "@/lib/nf/exercises";
 import {
   DAY_LABELS,
   dayKeyOf,
@@ -41,8 +42,14 @@ function SessionRoute() {
   );
 }
 
-type LiveSet = { weight: number; reps: number; done: boolean };
-type LiveEntry = { name: string; muscle: string; sets: LiveSet[]; rest: number };
+type LiveSet = { weight: number; reps: number; seconds: number; done: boolean };
+type LiveEntry = {
+  name: string;
+  muscle: string;
+  mode: ExerciseMode;
+  sets: LiveSet[];
+  rest: number;
+};
 
 function SessionBody() {
   const { state, keypass, refresh } = useNutriFit();
@@ -63,16 +70,21 @@ function SessionBody() {
   useEffect(() => {
     if (!planDay || entries) return;
     setEntries(
-      planDay.exercises.map((e) => ({
-        name: e.name,
-        muscle: e.muscle,
-        rest: e.rest || 90,
-        sets: Array.from({ length: Math.max(1, e.sets) }, () => ({
-          weight: e.weight,
-          reps: e.reps,
-          done: false,
-        })),
-      })),
+      planDay.exercises.map((e) => {
+        const mode = e.mode ?? exerciseMode(e.name);
+        return {
+          name: e.name,
+          muscle: e.muscle,
+          mode,
+          rest: e.rest || 90,
+          sets: Array.from({ length: Math.max(1, e.sets) }, () => ({
+            weight: mode === "time" ? 0 : e.weight,
+            reps: mode === "time" ? 0 : e.reps,
+            seconds: mode === "time" ? e.seconds || 30 : 0,
+            done: false,
+          })),
+        };
+      }),
     );
   }, [planDay, entries]);
 
@@ -96,12 +108,15 @@ function SessionBody() {
   }, [restRunning]);
 
   const previous = useMemo(() => {
-    const map = new Map<string, { weight: number; reps: number }>();
+    const map = new Map<string, { weight: number; reps: number; seconds: number }>();
     for (const s of state?.sessions ?? []) {
       for (const e of s.entries ?? []) {
         if (map.has(e.name)) continue;
-        const best = [...e.sets].sort((a, b) => b.weight * b.reps - a.weight * a.reps)[0];
-        if (best) map.set(e.name, { weight: best.weight, reps: best.reps });
+        const best = [...e.sets].sort(
+          (a, b) => (b.weight * b.reps || b.seconds || 0) - (a.weight * a.reps || a.seconds || 0),
+        )[0];
+        if (best)
+          map.set(e.name, { weight: best.weight, reps: best.reps, seconds: best.seconds ?? 0 });
       }
     }
     return map;
@@ -159,7 +174,13 @@ function SessionBody() {
       const payload: SessionEntry[] = entries!.map((e) => ({
         name: e.name,
         muscle: e.muscle,
-        sets: e.sets.map((s) => ({ weight: s.weight, reps: s.reps, done: s.done })),
+        mode: e.mode,
+        sets: e.sets.map((s) => ({
+          weight: s.weight,
+          reps: s.reps,
+          seconds: s.seconds,
+          done: s.done,
+        })),
       }));
       if (!payload.some((e) => e.sets.some((s) => s.done))) {
         toast.error("Complete at least one set first");
@@ -274,14 +295,19 @@ function SessionBody() {
       <Card key={entry.name} className="space-y-4">
         <div>
           <p className="text-xl font-bold">{entry.name}</p>
-          <p className="text-xs text-muted-foreground">{entry.muscle}</p>
+          <p className="text-xs text-muted-foreground">
+            {entry.muscle} · {entry.mode === "time" ? "Timed sets" : "Rep sets"}
+          </p>
         </div>
 
         <div className="rounded-2xl bg-elevated p-3 text-xs">
           {prev ? (
             <>
               <p className="text-muted-foreground">
-                Previous: <span className="font-semibold text-foreground">{prev.weight} kg × {prev.reps}</span>
+                Previous:{" "}
+                <span className="font-semibold text-foreground">
+                  {entry.mode === "time" ? `${prev.seconds}s` : `${prev.weight} kg × ${prev.reps}`}
+                </span>
               </p>
               <p className="mt-1 text-muted-foreground">
                 {trainer.name}: "Try to match or beat your last workout."
@@ -306,18 +332,29 @@ function SessionBody() {
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-background text-xs font-bold">
                 {i + 1}
               </span>
-              <NumberField
-                value={s.weight}
-                onChange={(v) => updateSet(i, { weight: v })}
-                suffix="kg"
-                disabled={s.done}
-              />
-              <NumberField
-                value={s.reps}
-                onChange={(v) => updateSet(i, { reps: v })}
-                suffix="reps"
-                disabled={s.done}
-              />
+              {entry.mode === "time" ? (
+                <NumberField
+                  value={s.seconds}
+                  onChange={(v) => updateSet(i, { seconds: v })}
+                  suffix="sec"
+                  disabled={s.done}
+                />
+              ) : (
+                <>
+                  <NumberField
+                    value={s.weight}
+                    onChange={(v) => updateSet(i, { weight: v })}
+                    suffix="kg"
+                    disabled={s.done}
+                  />
+                  <NumberField
+                    value={s.reps}
+                    onChange={(v) => updateSet(i, { reps: v })}
+                    suffix="reps"
+                    disabled={s.done}
+                  />
+                </>
+              )}
               <button
                 onClick={() => (s.done ? updateSet(i, { done: false }) : completeSet(i))}
                 className={cn(
@@ -341,7 +378,7 @@ function SessionBody() {
                       ...e,
                       sets: [
                         ...e.sets,
-                        { ...(e.sets[e.sets.length - 1] ?? { weight: 0, reps: 10 }), done: false },
+                        { ...(e.sets[e.sets.length - 1] ?? { weight: 0, reps: 10, seconds: 30 }), done: false },
                       ],
                     }
                   : e,

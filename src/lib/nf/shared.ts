@@ -75,13 +75,19 @@ export type Meal = {
   created_at: string;
 };
 
+export type ExerciseMode = "reps" | "time";
+
 export type PlanExercise = {
   id: string;
   name: string;
   muscle: string;
+  /** "reps" = sets/reps/kg, "time" = sets/seconds. Defaults to "reps" for legacy plans. */
+  mode?: ExerciseMode;
   sets: number;
   reps: number;
   weight: number;
+  /** Duration per set for time-based exercises. */
+  seconds?: number;
   rest: number;
 };
 
@@ -91,7 +97,8 @@ export type Plan = Partial<Record<DayKey, PlanDay>>;
 export type SessionEntry = {
   name: string;
   muscle: string;
-  sets: { weight: number; reps: number; done: boolean }[];
+  mode?: ExerciseMode;
+  sets: { weight: number; reps: number; seconds?: number; done: boolean }[];
 };
 
 export type WorkoutSession = {
@@ -151,7 +158,7 @@ export const ACTIVITY_LABELS: Record<Activity, string> = {
 
 export const GOAL_LABELS: Record<Goal, string> = {
   lose: "Lose fat",
-  maintain: "Stay lean",
+  maintain: "Stay fit",
   gain: "Build muscle",
 };
 

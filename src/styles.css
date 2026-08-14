@@ -86,6 +86,54 @@
   --shadow-glow: 0 0 32px -8px color-mix(in oklab, var(--lime) 45%, transparent);
 }
 
+/* ---- Accent themes (always kept readable against the surface colours) ---- */
+[data-accent="amber"] {
+  --lime: oklch(0.87 0.17 96);
+  --amber: oklch(0.83 0.17 78);
+  --ember: oklch(0.76 0.18 55);
+}
+
+[data-accent="ember"] {
+  --lime: oklch(0.8 0.17 62);
+  --amber: oklch(0.76 0.19 44);
+  --ember: oklch(0.7 0.19 28);
+}
+
+[data-accent="ice"] {
+  --lime: oklch(0.83 0.13 215);
+  --amber: oklch(0.8 0.13 232);
+  --ember: oklch(0.76 0.15 262);
+}
+
+[data-accent] {
+  --primary: var(--lime);
+  --ring: var(--lime);
+  --primary-foreground: oklch(0.19 0.04 250);
+}
+
+/* ---- Light appearance ---- */
+[data-theme="light"] {
+  --background: oklch(0.975 0.005 110);
+  --foreground: oklch(0.21 0.012 120);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.012 120);
+  --elevated: oklch(0.945 0.006 115);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.012 120);
+  --secondary: oklch(0.945 0.006 115);
+  --secondary-foreground: oklch(0.21 0.012 120);
+  --muted: oklch(0.945 0.006 115);
+  --muted-foreground: oklch(0.47 0.014 115);
+  --accent: oklch(0.93 0.012 110);
+  --accent-foreground: oklch(0.21 0.012 120);
+  --border: oklch(0.89 0.008 115);
+  --input: oklch(0.89 0.008 115);
+  --primary-foreground: oklch(0.2 0.03 130);
+  --shadow-soft: 0 16px 34px -26px oklch(0 0 0 / 0.4);
+  --gradient-card: linear-gradient(160deg, oklch(1 0 0) 0%, oklch(0.985 0.004 110) 100%);
+}
+
+
 @layer base {
   * {
     border-color: var(--color-border);

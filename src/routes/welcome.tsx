@@ -41,10 +41,10 @@ export const Route = createFileRoute("/welcome")({
 
 type Draft = {
   name: string;
-  age: number;
+  age: string;
   gender: Gender;
-  height_cm: number;
-  weight_kg: number;
+  height_cm: string;
+  weight_kg: string;
   activity: Activity;
   goal: Goal;
   experience: Experience;
@@ -54,10 +54,10 @@ type Draft = {
 
 const DEFAULT: Draft = {
   name: "",
-  age: 25,
+  age: "25",
   gender: "male",
-  height_cm: 172,
-  weight_kg: 70,
+  height_cm: "172",
+  weight_kg: "70",
   activity: "moderate",
   goal: "gain",
   experience: "beginner",
@@ -80,7 +80,14 @@ function Welcome() {
   async function submit() {
     setBusy(true);
     try {
-      const res = await createProfile({ data: { ...draft } });
+      const res = await createProfile({
+        data: {
+          ...draft,
+          age: Number(draft.age),
+          height_cm: Number(draft.height_cm),
+          weight_kg: Number(draft.weight_kg),
+        },
+      });
       setKeypass(res.keypass);
       signIn(res.keypass);
       setMode("done");
@@ -206,10 +213,11 @@ function Welcome() {
     );
   }
 
-  const steps = [
+  const steps: { title: string; valid: boolean; hint?: string; body: React.ReactNode }[] = [
     {
       title: "What should we call you?",
-      valid: draft.name.trim().length > 1,
+      valid: draft.name.trim().length > 1 && Number(draft.age) >= 13 && Number(draft.age) <= 100,
+      hint: "Enter your name and an age between 13 and 100.",
       body: (
         <div className="space-y-4">
           <Field label="Name">
@@ -220,48 +228,54 @@ function Welcome() {
               className="input-nf"
             />
           </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Age">
-              <input
-                type="number"
-                value={draft.age}
-                onChange={(e) => set("age", Math.min(100, Math.max(13, +e.target.value || 0)))}
-                className="input-nf"
-              />
-            </Field>
-            <Field label="Gender">
-              <Segmented
-                value={draft.gender}
-                onChange={(v) => set("gender", v as Gender)}
-                options={[
-                  { value: "male", label: "M" },
-                  { value: "female", label: "F" },
-                  { value: "other", label: "Other" },
-                ]}
-              />
-            </Field>
-          </div>
+          <Field label="Age">
+            <input
+              inputMode="numeric"
+              value={draft.age}
+              onChange={(e) => set("age", digitsOnly(e.target.value))}
+              placeholder="25"
+              className="input-nf"
+            />
+          </Field>
+          <Field label="Gender">
+            <Segmented
+              value={draft.gender}
+              onChange={(v) => set("gender", v as Gender)}
+              options={[
+                { value: "male", label: "Male" },
+                { value: "female", label: "Female" },
+                { value: "other", label: "Other" },
+              ]}
+            />
+          </Field>
         </div>
       ),
     },
     {
       title: "Your body stats",
-      valid: draft.height_cm > 100 && draft.weight_kg > 30,
+      valid:
+        Number(draft.height_cm) >= 100 &&
+        Number(draft.height_cm) <= 250 &&
+        Number(draft.weight_kg) >= 30 &&
+        Number(draft.weight_kg) <= 300,
+      hint: "Height 100-250 cm and weight 30-300 kg.",
       body: (
         <div className="grid grid-cols-2 gap-3">
           <Field label="Height (cm)">
             <input
-              type="number"
+              inputMode="numeric"
               value={draft.height_cm}
-              onChange={(e) => set("height_cm", +e.target.value || 0)}
+              onChange={(e) => set("height_cm", digitsOnly(e.target.value))}
+              placeholder="172"
               className="input-nf"
             />
           </Field>
           <Field label="Weight (kg)">
             <input
-              type="number"
+              inputMode="numeric"
               value={draft.weight_kg}
-              onChange={(e) => set("weight_kg", +e.target.value || 0)}
+              onChange={(e) => set("weight_kg", digitsOnly(e.target.value))}
+              placeholder="70"
               className="input-nf"
             />
           </Field>
@@ -286,7 +300,7 @@ function Welcome() {
       ),
     },
     {
-      title: "What's the goal?",
+      title: "What's your goal?",
       valid: true,
       body: (
         <div className="space-y-2">
@@ -298,10 +312,10 @@ function Welcome() {
               title={GOAL_LABELS[g]}
               detail={
                 g === "lose"
-                  ? "Moderate deficit, high protein"
+                  ? "Eat a little less, keep protein high"
                   : g === "gain"
-                    ? "Small surplus, progressive overload"
-                    : "Maintenance calories, steady training"
+                    ? "Eat a little more, lift a little heavier"
+                    : "Hold your weight and train steadily"
               }
             />
           ))}
@@ -400,7 +414,14 @@ function Welcome() {
   ];
 
   const current = steps[step]!;
-  const preview = computeTargets(draft);
+  const preview = computeTargets({
+    age: Number(draft.age) || 25,
+    gender: draft.gender,
+    height_cm: Number(draft.height_cm) || 170,
+    weight_kg: Number(draft.weight_kg) || 70,
+    activity: draft.activity,
+    goal: draft.goal,
+  });
 
   return (
     <Frame>
@@ -439,7 +460,10 @@ function Welcome() {
         ) : null}
       </div>
 
-      <div className="pt-3">
+      <div className="space-y-2 pt-3">
+        {!current.valid && current.hint ? (
+          <p className="text-center text-xs text-muted-foreground">{current.hint}</p>
+        ) : null}
         <PrimaryButton
           disabled={!current.valid || busy}
           onClick={() => (step === steps.length - 1 ? submit() : setStep(step + 1))}
@@ -454,6 +478,10 @@ function Welcome() {
       </div>
     </Frame>
   );
+}
+
+function digitsOnly(v: string, max = 3) {
+  return v.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, "").slice(0, max);
 }
 
 function Frame({ children }: { children: React.ReactNode }) {

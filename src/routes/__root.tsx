@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { NutriFitProvider } from "../lib/nf/store";
+import { ThemeProvider } from "../lib/nf/theme";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
@@ -127,11 +128,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NutriFitProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <Toaster theme="dark" position="top-center" offset={12} />
-      </NutriFitProvider>
+      <ThemeProvider>
+        <NutriFitProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <Toaster theme="dark" position="top-center" offset={12} />
+        </NutriFitProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
