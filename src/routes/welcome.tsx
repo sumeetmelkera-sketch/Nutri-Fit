@@ -213,7 +213,7 @@ function Welcome() {
     );
   }
 
-  const steps = [
+  const steps: { title: string; valid: boolean; hint?: string; body: React.ReactNode }[] = [
     {
       title: "What should we call you?",
       valid: draft.name.trim().length > 1 && Number(draft.age) >= 13 && Number(draft.age) <= 100,
