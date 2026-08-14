@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Card, Screen, SectionTitle } from "@/components/nf/Shell";
 import { savePlan } from "@/lib/nutrifit.functions";
 import { useNutriFit } from "@/lib/nf/store";
-import { EXERCISE_LIBRARY, MUSCLES, type Muscle } from "@/lib/nf/exercises";
+import { EXERCISE_LIBRARY, MUSCLES, exerciseMode, type ExerciseMode, type Muscle } from "@/lib/nf/exercises";
 import {
   DAY_KEYS,
   DAY_LABELS,
@@ -148,7 +148,9 @@ function PlanBody() {
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-bold">{ex.name}</p>
-                  <p className="text-[11px] text-muted-foreground">{ex.muscle}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {ex.muscle} · {(ex.mode ?? exerciseMode(ex.name)) === "time" ? "Timed" : "Reps"}
+                  </p>
                 </div>
                 <div className="flex shrink-0 gap-1">
                   <IconBtn onClick={() => move(i, -1)} label="Move up">
@@ -235,7 +237,7 @@ function PlanBody() {
       {picker ? (
         <ExercisePicker
           onClose={() => setPicker(false)}
-          onPick={(name, muscle) => {
+          onPick={(name, muscle, mode) => {
             setDayValue({
               title: current.title || defaultTitle(muscle),
               exercises: [
@@ -244,8 +246,10 @@ function PlanBody() {
                   id: crypto.randomUUID(),
                   name,
                   muscle,
+                  mode,
                   sets: 3,
-                  reps: 10,
+                  reps: mode === "time" ? 0 : 10,
+                  seconds: mode === "time" ? 30 : 0,
                   weight: 0,
                   rest: 90,
                 },
@@ -293,7 +297,7 @@ function ExercisePicker({
   onPick,
 }: {
   onClose: () => void;
-  onPick: (name: string, muscle: Muscle) => void;
+  onPick: (name: string, muscle: Muscle, mode: ExerciseMode) => void;
 }) {
   const [q, setQ] = useState("");
   const [muscle, setMuscle] = useState<Muscle | "All">("All");
@@ -310,16 +314,17 @@ function ExercisePicker({
   return (
     <div className="fixed inset-0 z-50 flex items-end bg-background/70 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="rise flex max-h-[86vh] w-full flex-col rounded-t-3xl border-t border-border bg-card p-5 pb-8"
+        className="rise flex h-[85vh] max-h-[85vh] w-full flex-col rounded-t-3xl border-t border-border bg-card"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-3 flex items-center justify-between">
+        <div className="shrink-0 space-y-3 px-5 pb-3 pt-4">
+        <div className="flex items-center justify-between">
           <p className="text-lg font-bold">Exercise library</p>
           <button onClick={onClose} className="press text-muted-foreground" aria-label="Close">
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="relative mb-3">
+        <div className="relative">
           <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             value={q}
@@ -328,7 +333,7 @@ function ExercisePicker({
             className="input-nf pl-10"
           />
         </div>
-        <div className="-mx-5 mb-3 flex gap-2 overflow-x-auto px-5">
+        <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
           {(["All", ...MUSCLES] as const).map((m) => (
             <button
               key={m}
@@ -342,15 +347,18 @@ function ExercisePicker({
             </button>
           ))}
         </div>
-        <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto">
+        </div>
+        <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           {list.map((e) => (
             <button
               key={e.name}
-              onClick={() => onPick(e.name, e.muscle)}
+              onClick={() => onPick(e.name, e.muscle, e.mode)}
               className="press flex w-full items-center justify-between rounded-2xl bg-elevated px-4 py-3 text-left"
             >
               <span className="text-sm font-medium">{e.name}</span>
-              <span className="text-[11px] text-muted-foreground">{e.muscle}</span>
+              <span className="shrink-0 text-[11px] text-muted-foreground">
+                {e.muscle}{e.mode === "time" ? " · timed" : ""}
+              </span>
             </button>
           ))}
           {!list.length ? (
