@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Apple, Dumbbell, Home, MessageCircle, TrendingUp } from "lucide-react";
+import { Apple, Dumbbell, Home, TrendingUp, User } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import logo from "@/assets/nutrifit-logo.png.asset.json";
 import { useNutriFit } from "@/lib/nf/store";
@@ -11,8 +11,9 @@ const TABS = [
   { to: "/nutrition", label: "Nutrition", icon: Apple },
   { to: "/workout", label: "Workout", icon: Dumbbell },
   { to: "/progress", label: "Progress", icon: TrendingUp },
-  { to: "/trainer", label: "Trainer", icon: MessageCircle },
+  { to: "/me", label: "Me", icon: User },
 ] as const;
+
 
 export function BottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
