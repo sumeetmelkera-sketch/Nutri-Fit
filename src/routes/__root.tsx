@@ -127,11 +127,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NutriFitProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <Toaster theme="dark" position="top-center" offset={12} />
-      </NutriFitProvider>
+      <ThemeProvider>
+        <NutriFitProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <Toaster theme="dark" position="top-center" offset={12} />
+        </NutriFitProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
