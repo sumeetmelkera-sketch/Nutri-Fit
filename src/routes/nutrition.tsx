@@ -218,8 +218,8 @@ function NutritionBody() {
                     <div className="min-w-0">
                       <p className="text-sm font-medium">{m.description}</p>
                       <p className="text-xs text-muted-foreground">
-                        {Math.round(m.nutrition.calories)} kcal · P{Math.round(m.nutrition.protein)} ·
-                        C{Math.round(m.nutrition.carbs)} · F{Math.round(m.nutrition.fat)}
+                        {Math.round(m.nutrition.calories)} kcal • {Math.round(m.nutrition.protein)}g Protein •{" "}
+                        {Math.round(m.nutrition.carbs)}g Carbohydrates • {Math.round(m.nutrition.fat)}g Fat
                       </p>
                     </div>
                     <div className="flex shrink-0 gap-1">

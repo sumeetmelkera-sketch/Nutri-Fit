@@ -17,15 +17,39 @@ import {
 
 const KEY = "nutrifit.keypass";
 
+function readCookie(): string | null {
+  if (typeof document === "undefined") return null;
+  const m = document.cookie.match(/(?:^|;\s*)nutrifit_keypass=([A-Z0-9]{11})/);
+  return m ? m[1]! : null;
+}
+
+/** Keypass persists in localStorage + a 1-year cookie so installed PWA / cleared storage still recovers. */
 export function readKeypass() {
   if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(KEY);
+  let kp: string | null = null;
+  try {
+    kp = window.localStorage.getItem(KEY);
+  } catch {
+    kp = null;
+  }
+  if (!kp) kp = readCookie();
+  if (kp) writeKeypass(kp);
+  return kp;
 }
 
 export function writeKeypass(kp: string | null) {
   if (typeof window === "undefined") return;
-  if (kp) window.localStorage.setItem(KEY, kp);
-  else window.localStorage.removeItem(KEY);
+  try {
+    if (kp) window.localStorage.setItem(KEY, kp);
+    else window.localStorage.removeItem(KEY);
+  } catch {
+    /* storage may be unavailable */
+  }
+  if (typeof document !== "undefined") {
+    document.cookie = kp
+      ? `nutrifit_keypass=${kp}; path=/; max-age=31536000; SameSite=Lax`
+      : "nutrifit_keypass=; path=/; max-age=0; SameSite=Lax";
+  }
 }
 
 type StateShape = {

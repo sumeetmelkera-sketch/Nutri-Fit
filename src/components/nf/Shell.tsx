@@ -1,7 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Apple, Dumbbell, Home, TrendingUp, User } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
-import logo from "@/assets/nutrifit-logo.png.asset.json";
 import { useNutriFit } from "@/lib/nf/store";
 import { getTrainer } from "@/lib/nf/trainers";
 import { cn } from "@/lib/utils";
@@ -87,11 +86,12 @@ export function AppHeader({
 export function Brand({ size = 44 }: { size?: number }) {
   return (
     <img
-      src={logo.url}
+      src="/icon-512.png"
       alt="NutriFit logo"
       width={size}
       height={size}
-      className="rounded-2xl"
+      decoding="async"
+      className="rounded-[22%] object-contain"
       style={{ width: size, height: size }}
     />
   );
@@ -118,10 +118,12 @@ export function Screen({
 
   if (!ready || (keypass && loading)) {
     return (
-      <div className="grid min-h-screen place-items-center gap-4 bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Brand size={56} />
-          <div className="sheen h-1.5 w-28 rounded-full bg-elevated" />
+      <div className="grid min-h-screen place-items-center gap-4 bg-black px-10">
+        <div className="rise flex flex-col items-center gap-6">
+          <div className="rounded-[28px] p-4">
+            <Brand size={132} />
+          </div>
+          <div className="sheen h-1.5 w-28 rounded-full bg-white/10" />
         </div>
       </div>
     );

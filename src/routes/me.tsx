@@ -381,10 +381,14 @@ function MeBody() {
       </Card>
 
       <SectionTitle>About</SectionTitle>
-      <Card className="mb-4 space-y-1 text-sm">
-        <p className="font-bold">NutriFit</p>
-        <p className="text-muted-foreground">Version : 1.0</p>
-        <p className="text-muted-foreground">Created by : Sumeet Ashok Melkera</p>
+      <Card className="mb-4 space-y-2 text-sm">
+        <p className="font-bold">NutriFit : Train. Eat. Improve</p>
+        <p className="text-muted-foreground">Version 1.0</p>
+        <p className="text-muted-foreground">
+          A simple fitness app to track your food, calories, nutrients, workouts, and progress in
+          daily life.
+        </p>
+        <p className="text-muted-foreground">Created by Sumeeth Ashok Melkera</p>
       </Card>
     </>
   );
