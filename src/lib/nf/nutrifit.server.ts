@@ -80,7 +80,7 @@ async function callAI(messages: { role: string; content: string }[], jsonMode: b
     body: JSON.stringify({
       model: "google/gemini-3.6-flash",
       messages,
-      ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
+      ...(jsonMode ? { response_format: { type: "json_object" }, temperature: 0 } : {}),
     }),
   });
   if (res.status === 429) throw new Error("The trainer is busy right now. Try again in a moment.");
