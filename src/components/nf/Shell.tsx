@@ -87,11 +87,12 @@ export function AppHeader({
 export function Brand({ size = 44 }: { size?: number }) {
   return (
     <img
-      src={logo.url}
+      src="/icon-512.png"
       alt="NutriFit logo"
       width={size}
       height={size}
-      className="rounded-2xl"
+      decoding="async"
+      className="rounded-[22%] object-contain"
       style={{ width: size, height: size }}
     />
   );
