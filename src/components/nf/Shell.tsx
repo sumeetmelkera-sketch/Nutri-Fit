@@ -1,7 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Apple, Dumbbell, Home, TrendingUp, User } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
-import logo from "@/assets/nutrifit-logo.png.asset.json";
 import { useNutriFit } from "@/lib/nf/store";
 import { getTrainer } from "@/lib/nf/trainers";
 import { cn } from "@/lib/utils";
