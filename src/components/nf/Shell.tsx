@@ -151,7 +151,37 @@ export function Screen({
         {header ? <AppHeader title={title} subtitle={subtitle} /> : null}
         <main className="space-y-4 px-5">{children}</main>
       </div>
+      <FloatingTrainer />
       <BottomNav />
+    </div>
+  );
+}
+
+/** Persistent access to the existing trainer chat from every screen. */
+export function FloatingTrainer() {
+  const { state } = useNutriFit();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const trainer = getTrainer(state?.profile.trainer_id);
+  if (pathname.startsWith("/trainer")) return null;
+  return (
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 pb-[calc(env(safe-area-inset-bottom)+5.5rem)]">
+      <div className="mx-auto flex max-w-md justify-end px-5">
+        <Link
+          to="/trainer"
+          aria-label={`Chat with ${trainer.name}`}
+          className="press float-soft pointer-events-auto relative grid h-14 w-14 place-items-center rounded-full border border-border bg-card shadow-lg shadow-black/40 ring-2 ring-primary/40 backdrop-blur"
+        >
+          <img
+            src={trainer.image}
+            alt={trainer.name}
+            width={56}
+            height={56}
+            loading="lazy"
+            className="h-full w-full rounded-full object-cover"
+          />
+          <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-background bg-primary" />
+        </Link>
+      </div>
     </div>
   );
 }
