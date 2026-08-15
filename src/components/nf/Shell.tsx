@@ -119,10 +119,12 @@ export function Screen({
 
   if (!ready || (keypass && loading)) {
     return (
-      <div className="grid min-h-screen place-items-center gap-4 bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Brand size={56} />
-          <div className="sheen h-1.5 w-28 rounded-full bg-elevated" />
+      <div className="grid min-h-screen place-items-center gap-4 bg-black px-10">
+        <div className="rise flex flex-col items-center gap-6">
+          <div className="rounded-[28px] p-4">
+            <Brand size={132} />
+          </div>
+          <div className="sheen h-1.5 w-28 rounded-full bg-white/10" />
         </div>
       </div>
     );
