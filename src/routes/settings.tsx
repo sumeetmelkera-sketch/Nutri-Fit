@@ -99,7 +99,7 @@ function SettingsBody() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onBlur={saveBasics}
-            className="nf-input"
+            className="input-nf"
           />
         </Field>
         <div className="grid grid-cols-3 gap-2">
@@ -109,7 +109,7 @@ function SettingsBody() {
               value={age}
               onChange={(e) => setAge(digitsOnly(e.target.value))}
               onBlur={saveBasics}
-              className="nf-input"
+              className="input-nf"
             />
           </Field>
           <Field label="Height (cm)">
@@ -118,7 +118,7 @@ function SettingsBody() {
               value={height}
               onChange={(e) => setHeight(digitsOnly(e.target.value))}
               onBlur={saveBasics}
-              className="nf-input"
+              className="input-nf"
             />
           </Field>
           <Field label="Weight (kg)">
@@ -127,7 +127,7 @@ function SettingsBody() {
               value={weight}
               onChange={(e) => setWeight(digitsOnly(e.target.value))}
               onBlur={saveBasics}
-              className="nf-input"
+              className="input-nf"
             />
           </Field>
         </div>
@@ -159,7 +159,7 @@ function SettingsBody() {
           <select
             value={p.activity}
             onChange={(e) => patch({ activity: e.target.value as Activity })}
-            className="nf-input"
+            className="input-nf"
           >
             {(Object.keys(ACTIVITY_LABELS) as Activity[]).map((a) => (
               <option key={a} value={a}>
