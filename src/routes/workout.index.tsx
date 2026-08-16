@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Card, Screen, SectionTitle } from "@/components/nf/Shell";
 import { savePlan } from "@/lib/nutrifit.functions";
 import { useNutriFit } from "@/lib/nf/store";
-import { EXERCISE_LIBRARY, MUSCLES, exerciseMode, type ExerciseMode, type Muscle } from "@/lib/nf/exercises";
+import { EQUIPMENT_LABELS, EXERCISE_LIBRARY, MUSCLES, exerciseMode, type ExerciseMode, type Muscle } from "@/lib/nf/exercises";
 import {
   DAY_KEYS,
   DAY_LABELS,
