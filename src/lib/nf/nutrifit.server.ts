@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { estimateFoodOffline } from "./food-fallback";
 import {
   computeStreak,
   computeTargets,
