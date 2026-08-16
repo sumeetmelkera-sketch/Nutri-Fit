@@ -1,7 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-export type ThemeMode = "dark" | "light";
+export type ThemeMode = "black" | "graphite" | "light" | "system";
 export type Accent = "lime" | "amber" | "ember" | "ice";
+
+export const THEMES: { id: ThemeMode; label: string }[] = [
+  { id: "black", label: "True Black" },
+  { id: "graphite", label: "Graphite" },
+  { id: "light", label: "Light" },
+  { id: "system", label: "System" },
+];
 
 export const ACCENTS: { id: Accent; label: string; swatch: string }[] = [
   { id: "lime", label: "Lime", swatch: "oklch(0.85 0.22 132)" },
@@ -22,21 +29,44 @@ type Ctx = {
 
 const ThemeContext = createContext<Ctx | null>(null);
 
+function resolve(theme: ThemeMode): "black" | "graphite" | "light" {
+  if (theme !== "system") return theme;
+  if (typeof window === "undefined") return "graphite";
+  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "graphite";
+}
+
 function apply(theme: ThemeMode, accent: Accent) {
   if (typeof document === "undefined") return;
+  const resolved = resolve(theme);
   const root = document.documentElement;
-  root.dataset["theme"] = theme;
+  root.dataset["theme"] = resolved;
   root.dataset["accent"] = accent;
-  root.classList.toggle("dark", theme === "dark");
+  root.classList.toggle("dark", resolved !== "light");
+}
+
+function readTheme(): ThemeMode {
+  try {
+    const raw = window.localStorage.getItem(THEME_KEY);
+    if (raw === "dark") return "graphite"; // legacy value
+    if (raw === "black" || raw === "graphite" || raw === "light" || raw === "system") return raw;
+  } catch {
+    /* storage may be unavailable */
+  }
+  return "graphite";
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeMode>("dark");
+  const [theme, setThemeState] = useState<ThemeMode>("graphite");
   const [accent, setAccentState] = useState<Accent>("lime");
 
   useEffect(() => {
-    const t = (window.localStorage.getItem(THEME_KEY) as ThemeMode | null) ?? "dark";
-    const a = (window.localStorage.getItem(ACCENT_KEY) as Accent | null) ?? "lime";
+    const t = readTheme();
+    let a: Accent = "lime";
+    try {
+      a = (window.localStorage.getItem(ACCENT_KEY) as Accent | null) ?? "lime";
+    } catch {
+      /* ignore */
+    }
     setThemeState(t);
     setAccentState(a);
     apply(t, a);
@@ -45,7 +75,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setTheme = useCallback(
     (t: ThemeMode) => {
       setThemeState(t);
-      window.localStorage.setItem(THEME_KEY, t);
+      try {
+        window.localStorage.setItem(THEME_KEY, t);
+      } catch {
+        /* ignore */
+      }
       apply(t, accent);
     },
     [accent],
@@ -54,13 +88,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setAccent = useCallback(
     (a: Accent) => {
       setAccentState(a);
-      window.localStorage.setItem(ACCENT_KEY, a);
+      try {
+        window.localStorage.setItem(ACCENT_KEY, a);
+      } catch {
+        /* ignore */
+      }
       apply(theme, a);
     },
     [theme],
   );
 
-  const value = useMemo(() => ({ theme, accent, setTheme, setAccent }), [theme, accent, setTheme, setAccent]);
+  const value = useMemo(
+    () => ({ theme, accent, setTheme, setAccent }),
+    [theme, accent, setTheme, setAccent],
+  );
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
