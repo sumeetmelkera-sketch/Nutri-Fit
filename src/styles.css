@@ -111,6 +111,19 @@
   --primary-foreground: oklch(0.19 0.04 250);
 }
 
+/* ---- True black appearance (OLED) ---- */
+[data-theme="black"] {
+  --background: oklch(0 0 0);
+  --card: oklch(0.14 0.006 120);
+  --elevated: oklch(0.19 0.008 120);
+  --popover: oklch(0.14 0.006 120);
+  --secondary: oklch(0.19 0.008 120);
+  --muted: oklch(0.19 0.008 120);
+  --border: oklch(0.26 0.01 120);
+  --input: oklch(0.26 0.01 120);
+  --gradient-card: linear-gradient(160deg, oklch(0.16 0.006 120) 0%, oklch(0.12 0.005 120) 100%);
+}
+
 /* ---- Light appearance ---- */
 [data-theme="light"] {
   --background: oklch(0.975 0.005 110);

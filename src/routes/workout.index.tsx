@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Card, Screen, SectionTitle } from "@/components/nf/Shell";
 import { savePlan } from "@/lib/nutrifit.functions";
 import { useNutriFit } from "@/lib/nf/store";
-import { EXERCISE_LIBRARY, MUSCLES, exerciseMode, type ExerciseMode, type Muscle } from "@/lib/nf/exercises";
+import { EQUIPMENT_LABELS, EXERCISE_LIBRARY, MUSCLES, exerciseMode, type ExerciseMode, type Muscle } from "@/lib/nf/exercises";
 import {
   DAY_KEYS,
   DAY_LABELS,
@@ -348,19 +348,30 @@ function ExercisePicker({
           ))}
         </div>
         </div>
-        <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-          {list.map((e) => (
-            <button
-              key={e.name}
-              onClick={() => onPick(e.name, e.muscle, e.mode)}
-              className="press flex w-full items-center justify-between rounded-2xl bg-elevated px-4 py-3 text-left"
-            >
-              <span className="text-sm font-medium">{e.name}</span>
-              <span className="shrink-0 text-[11px] text-muted-foreground">
-                {e.muscle}{e.mode === "time" ? " · timed" : ""}
-              </span>
-            </button>
-          ))}
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+          {(["dumbbell", "none"] as const).map((eq) => {
+            const group = list.filter((e) => e.equipment === eq);
+            if (!group.length) return null;
+            return (
+              <div key={eq} className="space-y-1.5">
+                <p className="sticky top-0 bg-card py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+                  {EQUIPMENT_LABELS[eq]}
+                </p>
+                {group.map((e) => (
+                  <button
+                    key={e.name}
+                    onClick={() => onPick(e.name, e.muscle, e.mode)}
+                    className="press flex w-full items-center justify-between gap-3 rounded-2xl bg-elevated px-4 py-3 text-left"
+                  >
+                    <span className="min-w-0 truncate text-sm font-medium">{e.name}</span>
+                    <span className="shrink-0 text-[11px] text-muted-foreground">
+                      {e.muscle}{e.mode === "time" ? " · timed" : ""}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            );
+          })}
           {!list.length ? (
             <p className="py-6 text-center text-sm text-muted-foreground">No exercises found.</p>
           ) : null}

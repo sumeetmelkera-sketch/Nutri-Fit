@@ -149,6 +149,7 @@ export type Database = {
         Row: {
           activity: string
           age: number
+          avatar_id: string
           created_at: string
           experience: string
           gender: string
@@ -165,6 +166,7 @@ export type Database = {
         Insert: {
           activity?: string
           age?: number
+          avatar_id?: string
           created_at?: string
           experience?: string
           gender?: string
@@ -181,6 +183,7 @@ export type Database = {
         Update: {
           activity?: string
           age?: number
+          avatar_id?: string
           created_at?: string
           experience?: string
           gender?: string

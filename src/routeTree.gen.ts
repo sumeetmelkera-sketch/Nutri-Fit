@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as NutritionRouteImport } from './routes/nutrition'
 import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TrainerRouteImport } from './routes/trainer'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WorkoutIndexRouteImport } from './routes/workout.index'
@@ -36,6 +37,11 @@ const NutritionRoute = NutritionRouteImport.update({
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrainerRoute = TrainerRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRoute
   '/nutrition': typeof NutritionRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/trainer': typeof TrainerRoute
   '/welcome': typeof WelcomeRoute
   '/workout/session': typeof WorkoutSessionRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/me': typeof MeRoute
   '/nutrition': typeof NutritionRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/trainer': typeof TrainerRoute
   '/welcome': typeof WelcomeRoute
   '/workout/session': typeof WorkoutSessionRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/me': typeof MeRoute
   '/nutrition': typeof NutritionRoute
   '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/trainer': typeof TrainerRoute
   '/welcome': typeof WelcomeRoute
   '/workout/session': typeof WorkoutSessionRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/nutrition'
     | '/progress'
+    | '/settings'
     | '/trainer'
     | '/welcome'
     | '/workout/session'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/nutrition'
     | '/progress'
+    | '/settings'
     | '/trainer'
     | '/welcome'
     | '/workout/session'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/nutrition'
     | '/progress'
+    | '/settings'
     | '/trainer'
     | '/welcome'
     | '/workout/session'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   MeRoute: typeof MeRoute
   NutritionRoute: typeof NutritionRoute
   ProgressRoute: typeof ProgressRoute
+  SettingsRoute: typeof SettingsRoute
   TrainerRoute: typeof TrainerRoute
   WelcomeRoute: typeof WelcomeRoute
   WorkoutSessionRoute: typeof WorkoutSessionRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/progress'
       fullPath: '/progress'
       preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trainer': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeRoute: MeRoute,
   NutritionRoute: NutritionRoute,
   ProgressRoute: ProgressRoute,
+  SettingsRoute: SettingsRoute,
   TrainerRoute: TrainerRoute,
   WelcomeRoute: WelcomeRoute,
   WorkoutSessionRoute: WorkoutSessionRoute,

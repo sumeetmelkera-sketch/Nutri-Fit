@@ -1,0 +1,1 @@
+ALTER TABLE public.nf_profiles ADD COLUMN IF NOT EXISTS avatar_id text NOT NULL DEFAULT 'a1';

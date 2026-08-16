@@ -62,6 +62,7 @@ export type Profile = {
   experience: Experience;
   workout_days: string[];
   trainer_id: string;
+  avatar_id: string;
   targets: Targets;
   created_at: string;
 };
