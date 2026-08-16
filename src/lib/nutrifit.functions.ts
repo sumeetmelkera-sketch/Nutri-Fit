@@ -123,14 +123,15 @@ export const updateMeal = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const profile = await requireProfile(data.keypass);
-    const patch: Record<string, unknown> = {
-      nutrition: data.nutrition,
-      meal_type: data.meal_type,
-    };
-    if (data.description !== undefined) patch["description"] = data.description.slice(0, 400);
     const { error } = await supabaseAdmin
       .from("nf_meals")
-      .update(patch)
+      .update({
+        nutrition: data.nutrition as unknown as never,
+        meal_type: data.meal_type,
+        ...(data.description !== undefined
+          ? { description: data.description.slice(0, 400) }
+          : {}),
+      })
       .eq("id", data.id)
       .eq("profile_id", profile.id);
     if (error) throw new Error(error.message);
