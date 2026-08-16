@@ -97,41 +97,56 @@ const num = (v: unknown, fallback = 0) => {
 };
 
 export async function analyzeFoodText(text: string): Promise<Nutrition> {
-  const content = await callAI(
-    [
-      {
-        role: "system",
-        content:
-          `You are a deterministic nutrition estimation engine specialised in INDIAN home cooking, plus global foods.
-Method: split the description into individual components, estimate each component separately using standard Indian preparations and COOKED weights, then SUM them into the totals you return. Be consistent: the same text and portion must always give the same numbers.
+  let content = "";
+  try {
+    content = await callAI(
+      [
+        {
+          role: "system",
+          content:
+            `You are a deterministic nutrition estimation engine specialised in INDIAN home cooking (plus global foods). You understand English, Hindi and Hinglish (Hindi written in English) food names and quantities.
+Method: split the description into individual components, estimate each component separately using standard Indian preparations and COOKED weights (including oil/ghee absorbed while frying or tadka), then SUM them into the totals you return. Be consistent: the same text and portion must always give the same numbers.
+Hindi/Hinglish vocabulary: chawal=rice, roti/chapati/phulka=flatbread, daal=dal, dahi=curd, doodh=milk, anda/ande=egg(s), machli=fish, sabzi/bhaji=vegetable curry, kanda=onion, pakoda/pakora/bhajiya=deep-fried besan fritter, aadha/aadhi=half, thoda/thodi=a little, ek/do/teen/char=1/2/3/4, katori=small bowl, ke saath=with, aur=and.
 Standard reference portions (use when quantity is unspecified):
 1 roti/chapati (~40g, no ghee) 110 kcal, 3P, 22C, 1F; 1 paratha (plain, ghee) 210 kcal, 4P, 28C, 9F.
 1 katori/bowl cooked rice (~150g) 200 kcal, 4P, 44C, 0.5F; 1 plate rice (~250g) 330 kcal, 6P, 73C, 1F.
 1 katori/bowl cooked dal (toor/moong/chana, ~150g, tadka) 140 kcal, 8P, 18C, 4F; rajma or chole 1 bowl 210 kcal, 10P, 30C, 5F.
 1 bowl mixed veg sabzi 120 kcal, 3P, 12C, 7F; aloo sabzi 1 bowl 180 kcal, 3P, 24C, 8F.
 Paneer 100g 265 kcal, 18P, 4C, 20F; paneer sabzi 1 bowl 250 kcal, 13P, 8C, 19F.
-Curd/dahi 1 katori (150g) 90 kcal, 5P, 7C, 5F; 1 glass milk (250ml, toned) 145 kcal, 8P, 12C, 6F.
+Curd/dahi 1 katori (150g) 90 kcal, 5P, 7C, 5F; 1 glass milk (250ml, toned) 145 kcal, 8P, 12C, 6F; 1 glass lassi 220 kcal; mango lassi 300 kcal; 1 cup chai with milk+sugar 90 kcal.
 Poha 1 plate 250 kcal, 5P, 45C, 6F; upma 1 plate 270 kcal, 6P, 42C, 9F; khichdi 1 bowl 250 kcal, 9P, 40C, 6F.
-1 idli 60 kcal, 2P, 12C, 0.4F; 1 plain dosa 135 kcal, 3P, 21C, 4F; masala dosa 250 kcal, 5P, 36C, 9F.
+1 idli 60 kcal, 2P, 12C, 0.4F; 1 plain dosa 135 kcal, 3P, 21C, 4F; masala dosa 250 kcal; 1 katori sambar 110 kcal.
 Veg biryani 1 plate 450 kcal; chicken biryani 1 plate 550 kcal, 25P, 65C, 20F.
-1 samosa 260 kcal, 4P, 30C, 14F; pakora 100g 320 kcal, 7P, 28C, 20F.
+1 samosa 260 kcal, 4P, 30C, 14F; 1 medium kanda/onion pakoda piece 70 kcal, 1.5P, 6C, 4.5F (deep fried, count oil absorption); 1 medium vada 150 kcal.
+1 bowl kheer (~200g, milk+rice+sugar) 280 kcal, 7P, 42C, 9F; 1 katori halwa 330 kcal; 1 gulab jamun 150 kcal; 1 ladoo 180 kcal.
 1 whole egg 78 kcal, 6P, 0.6C, 5F; chicken curry 1 bowl 240 kcal, 22P, 6C, 14F; grilled chicken 100g 165 kcal, 31P, 0C, 3.6F; fish curry 1 bowl 200 kcal, 20P, 6C, 10F; sprouts 1 bowl 130 kcal, 9P, 20C, 1F.
-Serving conversions: 1 katori = 1 bowl = ~150g cooked; 1 plate = ~250g; 1 cup = 240ml; 1 glass = 250ml; 1 tbsp = 15g; "half plate" = 0.5x plate; "a bit of"/"small amount" = 0.5x the standard portion.
+Serving conversions: 1 katori = 1 bowl = ~150g cooked; 1 plate = ~250g; 1 cup = 240ml; 1 glass = 250ml; 1 tbsp = 15g; "half plate"/"aadhi plate" = 0.5x plate; "thoda"/"a bit of"/"little" = 0.5x the standard portion; "3 to 4 pieces" = 3.5 pieces.
 Scale linearly with stated counts and grams (e.g. "2 rotis" = 2x roti). Values are ESTIMATES.
 Return ONLY JSON: {"items":[string],"calories":number,"protein":number,"carbs":number,"fat":number,"fiber":number,"sugar":number,"satFat":number,"sodium":number,"micros":[{"name":string,"amount":string}]}. Macros in grams, sodium in mg, micros up to 5 notable ones. items = one readable line per component with its assumed portion and kcal. Never refuse; always estimate.`,
-      },
-      { role: "user", content: text.slice(0, 600) },
-    ],
-    true,
-  );
+        },
+        { role: "user", content: text.slice(0, 600) },
+      ],
+      true,
+    );
+  } catch {
+    return estimateFoodOffline(text);
+  }
+
   let parsed: Record<string, unknown> = {};
   try {
     parsed = JSON.parse(content);
   } catch {
     const m = content.match(/\{[\s\S]*\}/);
-    if (m) parsed = JSON.parse(m[0]);
+    if (m) {
+      try {
+        parsed = JSON.parse(m[0]);
+      } catch {
+        parsed = {};
+      }
+    }
   }
-  return {
+
+  const result: Nutrition = {
     calories: num(parsed["calories"]),
     protein: num(parsed["protein"]),
     carbs: num(parsed["carbs"]),
@@ -145,6 +160,9 @@ Return ONLY JSON: {"items":[string],"calories":number,"protein":number,"carbs":n
       : [],
     items: Array.isArray(parsed["items"]) ? (parsed["items"] as string[]).slice(0, 12) : [],
   };
+  // Guard against impossible values from a bad AI response.
+  if (result.calories <= 0 || result.calories > 6000) return estimateFoodOffline(text);
+  return result;
 }
 
 export async function trainerReply(
@@ -156,13 +174,15 @@ export async function trainerReply(
       {
         role: "system",
         content: `You are a personal fitness and nutrition coach inside the NutriFit app. ${systemContext}
-Rules: keep replies under 70 words, practical and encouraging. Never diagnose medical conditions, never suggest extreme calorie restriction, unsafe loads, or training through pain — advise seeing a professional instead. Use the user's real data given above rather than inventing numbers.`,
+Answer style: be practical and easy to understand. Use a short numbered list (2-5 points) whenever you recommend exercises, foods or steps — e.g. "1. Push-ups — 3 sets x 8-15 reps". Add one short useful tip at the end. Keep the whole reply under 120 words. No long paragraphs, no repetition, no jargon unless needed.
+Safety: never diagnose medical conditions, never suggest extreme calorie restriction, unsafe loads, or training through pain — advise seeing a professional instead. Use the user's real data given above rather than inventing numbers.`,
       },
       ...history.slice(-12),
     ],
     false,
   );
 }
+
 
 /** Loads everything the app needs for a profile in one round trip. */
 export async function loadState(profile: Profile) {
