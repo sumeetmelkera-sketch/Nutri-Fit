@@ -33,6 +33,7 @@ export const createProfile = createServerFn({ method: "POST" })
       experience: String(data["experience"] ?? "beginner"),
       workout_days: (data["workout_days"] as string[]) ?? [],
       trainer_id: String(data["trainer_id"] ?? "aria"),
+      avatar_id: String(data["avatar_id"] ?? "a1"),
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const targets = computeTargets(base as any);
@@ -111,12 +112,25 @@ export const saveMeal = createServerFn({ method: "POST" })
   });
 
 export const updateMeal = createServerFn({ method: "POST" })
-  .inputValidator((d: { keypass: string; id: string; nutrition: Nutrition; meal_type: string }) => d)
+  .inputValidator(
+    (d: {
+      keypass: string;
+      id: string;
+      nutrition: Nutrition;
+      meal_type: string;
+      description?: string;
+    }) => d,
+  )
   .handler(async ({ data }) => {
     const profile = await requireProfile(data.keypass);
+    const patch: Record<string, unknown> = {
+      nutrition: data.nutrition,
+      meal_type: data.meal_type,
+    };
+    if (data.description !== undefined) patch["description"] = data.description.slice(0, 400);
     const { error } = await supabaseAdmin
       .from("nf_meals")
-      .update({ nutrition: data.nutrition, meal_type: data.meal_type })
+      .update(patch)
       .eq("id", data.id)
       .eq("profile_id", profile.id);
     if (error) throw new Error(error.message);
