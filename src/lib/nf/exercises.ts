@@ -1,5 +1,7 @@
 export type ExerciseMode = "reps" | "time";
-export type LibraryExercise = { name: string; muscle: Muscle; mode: ExerciseMode };
+/** "dumbbell" = With Dumbbell, "none" = Without Dumbbell (bodyweight / bar / machine-free). */
+export type Equipment = "dumbbell" | "none";
+
 export type Muscle =
   | "Chest"
   | "Back"
@@ -7,10 +9,19 @@ export type Muscle =
   | "Biceps"
   | "Triceps"
   | "Forearms"
-  | "Legs"
+  | "Core"
+  | "Quads"
+  | "Hamstrings"
   | "Glutes"
   | "Calves"
-  | "Core";
+  | "Rest & Recovery";
+
+export type LibraryExercise = {
+  name: string;
+  muscle: Muscle;
+  mode: ExerciseMode;
+  equipment: Equipment;
+};
 
 export const MUSCLES: Muscle[] = [
   "Chest",
@@ -19,127 +30,147 @@ export const MUSCLES: Muscle[] = [
   "Biceps",
   "Triceps",
   "Forearms",
-  "Legs",
+  "Core",
+  "Quads",
+  "Hamstrings",
   "Glutes",
   "Calves",
-  "Core",
+  "Rest & Recovery",
 ];
 
-const R = (name: string, muscle: Muscle): LibraryExercise => ({ name, muscle, mode: "reps" });
-const T = (name: string, muscle: Muscle): LibraryExercise => ({ name, muscle, mode: "time" });
+export const EQUIPMENT_LABELS: Record<Equipment, string> = {
+  dumbbell: "With dumbbell",
+  none: "Without dumbbell",
+};
+
+const D = (name: string, muscle: Muscle, mode: ExerciseMode = "reps"): LibraryExercise => ({
+  name,
+  muscle,
+  mode,
+  equipment: "dumbbell",
+});
+const B = (name: string, muscle: Muscle, mode: ExerciseMode = "reps"): LibraryExercise => ({
+  name,
+  muscle,
+  mode,
+  equipment: "none",
+});
 
 export const EXERCISE_LIBRARY: LibraryExercise[] = [
-  // Chest
-  R("Barbell Bench Press", "Chest"),
-  R("Incline Barbell Press", "Chest"),
-  R("Incline Dumbbell Press", "Chest"),
-  R("Flat Dumbbell Press", "Chest"),
-  R("Dumbbell Fly", "Chest"),
-  R("Cable Crossover", "Chest"),
-  R("Pec Deck Machine", "Chest"),
-  R("Push-Up", "Chest"),
-  R("Decline Push-Up", "Chest"),
-  R("Chest Dip", "Chest"),
+  // ---------- Chest ----------
+  D("Dumbbell Bench Press", "Chest"),
+  D("Dumbbell Incline Press", "Chest"),
+  D("Dumbbell Fly", "Chest"),
+  D("Dumbbell Floor Press", "Chest"),
+  D("Dumbbell Pullover", "Chest"),
+  B("Push-Up", "Chest"),
+  B("Incline Push-Up", "Chest"),
+  B("Decline Push-Up", "Chest"),
+  B("Wide Push-Up", "Chest"),
+  B("Chest Dip", "Chest"),
 
-  // Back
-  R("Deadlift", "Back"),
-  R("Pull-Up", "Back"),
-  R("Chin-Up", "Back"),
-  R("Lat Pulldown", "Back"),
-  R("Close-Grip Pulldown", "Back"),
-  R("Barbell Row", "Back"),
-  R("Pendlay Row", "Back"),
-  R("Seated Cable Row", "Back"),
-  R("Single-Arm Dumbbell Row", "Back"),
-  R("T-Bar Row", "Back"),
-  R("Straight-Arm Pulldown", "Back"),
-  R("Face Pull", "Back"),
-  R("Back Extension", "Back"),
-  T("Dead Hang", "Back"),
+  // ---------- Back ----------
+  D("Single-Arm Dumbbell Row", "Back"),
+  D("Bent-Over Dumbbell Row", "Back"),
+  D("Dumbbell Deadlift", "Back"),
+  D("Dumbbell Shrug", "Back"),
+  B("Pull-Up", "Back"),
+  B("Chin-Up", "Back"),
+  B("Inverted Row", "Back"),
+  B("Superman", "Back"),
+  B("Back Extension", "Back"),
+  B("Dead Hang", "Back", "time"),
 
-  // Shoulders
-  R("Overhead Press", "Shoulders"),
-  R("Dumbbell Shoulder Press", "Shoulders"),
-  R("Arnold Press", "Shoulders"),
-  R("Lateral Raise", "Shoulders"),
-  R("Cable Lateral Raise", "Shoulders"),
-  R("Front Raise", "Shoulders"),
-  R("Rear Delt Fly", "Shoulders"),
-  R("Reverse Pec Deck", "Shoulders"),
-  R("Upright Row", "Shoulders"),
-  R("Shrug", "Shoulders"),
+  // ---------- Shoulders ----------
+  D("Dumbbell Shoulder Press", "Shoulders"),
+  D("Arnold Press", "Shoulders"),
+  D("Lateral Raise", "Shoulders"),
+  D("Front Raise", "Shoulders"),
+  D("Rear Delt Fly", "Shoulders"),
+  B("Pike Push-Up", "Shoulders"),
+  B("Wall Handstand Hold", "Shoulders", "time"),
+  B("Arm Circles", "Shoulders", "time"),
 
-  // Biceps
-  R("Barbell Curl", "Biceps"),
-  R("EZ-Bar Curl", "Biceps"),
-  R("Dumbbell Curl", "Biceps"),
-  R("Hammer Curl", "Biceps"),
-  R("Incline Dumbbell Curl", "Biceps"),
-  R("Preacher Curl", "Biceps"),
-  R("Cable Curl", "Biceps"),
-  R("Concentration Curl", "Biceps"),
+  // ---------- Biceps ----------
+  D("Dumbbell Curl", "Biceps"),
+  D("Hammer Curl", "Biceps"),
+  D("Incline Dumbbell Curl", "Biceps"),
+  D("Concentration Curl", "Biceps"),
+  B("Chin-Up (Biceps Focus)", "Biceps"),
+  B("Towel Curl (Isometric)", "Biceps", "time"),
 
-  // Triceps
-  R("Triceps Pushdown", "Triceps"),
-  R("Rope Pushdown", "Triceps"),
-  R("Overhead Triceps Extension", "Triceps"),
-  R("Skull Crusher", "Triceps"),
-  R("Close-Grip Bench Press", "Triceps"),
-  R("Triceps Dip", "Triceps"),
-  R("Dumbbell Kickback", "Triceps"),
-  R("Diamond Push-Up", "Triceps"),
+  // ---------- Triceps ----------
+  D("Overhead Dumbbell Extension", "Triceps"),
+  D("Dumbbell Skull Crusher", "Triceps"),
+  D("Dumbbell Kickback", "Triceps"),
+  D("Close-Grip Dumbbell Press", "Triceps"),
+  B("Diamond Push-Up", "Triceps"),
+  B("Bench Dip", "Triceps"),
+  B("Triceps Dip", "Triceps"),
 
-  // Forearms
-  R("Barbell Wrist Curl", "Forearms"),
-  R("Reverse Wrist Curl", "Forearms"),
-  R("Reverse Barbell Curl", "Forearms"),
-  R("Wrist Roller", "Forearms"),
-  T("Farmer's Carry", "Forearms"),
-  T("Plate Pinch Hold", "Forearms"),
+  // ---------- Forearms ----------
+  D("Dumbbell Wrist Curl", "Forearms"),
+  D("Reverse Wrist Curl", "Forearms"),
+  D("Farmer's Carry", "Forearms", "time"),
+  B("Dead Hang for Grip", "Forearms", "time"),
+  B("Fingertip Push-Up", "Forearms"),
 
-  // Legs
-  R("Back Squat", "Legs"),
-  R("Front Squat", "Legs"),
-  R("Goblet Squat", "Legs"),
-  R("Hack Squat", "Legs"),
-  R("Leg Press", "Legs"),
-  R("Romanian Deadlift", "Legs"),
-  R("Walking Lunge", "Legs"),
-  R("Bulgarian Split Squat", "Legs"),
-  R("Leg Extension", "Legs"),
-  R("Lying Leg Curl", "Legs"),
-  R("Seated Leg Curl", "Legs"),
-  R("Step-Up", "Legs"),
-  T("Wall Sit", "Legs"),
+  // ---------- Core / Abs ----------
+  D("Dumbbell Russian Twist", "Core"),
+  D("Dumbbell Side Bend", "Core"),
+  D("Weighted Sit-Up", "Core"),
+  B("Plank", "Core", "time"),
+  B("Side Plank", "Core", "time"),
+  B("Hollow Body Hold", "Core", "time"),
+  B("Crunch", "Core"),
+  B("Leg Raise", "Core"),
+  B("Bicycle Crunch", "Core"),
+  B("Mountain Climbers", "Core", "time"),
 
-  // Glutes
-  R("Hip Thrust", "Glutes"),
-  R("Glute Bridge", "Glutes"),
-  R("Cable Kickback", "Glutes"),
-  R("Sumo Deadlift", "Glutes"),
-  R("Reverse Lunge", "Glutes"),
-  R("Abduction Machine", "Glutes"),
-  T("Glute Bridge Hold", "Glutes"),
+  // ---------- Quads ----------
+  D("Dumbbell Goblet Squat", "Quads"),
+  D("Dumbbell Front Squat", "Quads"),
+  D("Dumbbell Lunge", "Quads"),
+  D("Dumbbell Step-Up", "Quads"),
+  B("Bodyweight Squat", "Quads"),
+  B("Split Squat", "Quads"),
+  B("Jump Squat", "Quads"),
+  B("Wall Sit", "Quads", "time"),
 
-  // Calves
-  R("Standing Calf Raise", "Calves"),
-  R("Seated Calf Raise", "Calves"),
-  R("Leg Press Calf Raise", "Calves"),
-  R("Single-Leg Calf Raise", "Calves"),
-  R("Donkey Calf Raise", "Calves"),
+  // ---------- Hamstrings ----------
+  D("Dumbbell Romanian Deadlift", "Hamstrings"),
+  D("Dumbbell Stiff-Leg Deadlift", "Hamstrings"),
+  D("Dumbbell Single-Leg RDL", "Hamstrings"),
+  B("Nordic Curl", "Hamstrings"),
+  B("Glute-Ham Bridge Walkout", "Hamstrings"),
+  B("Good Morning (Bodyweight)", "Hamstrings"),
 
-  // Core
-  T("Plank", "Core"),
-  T("Side Plank", "Core"),
-  T("Hollow Body Hold", "Core"),
-  R("Hanging Leg Raise", "Core"),
-  R("Cable Crunch", "Core"),
-  R("Crunch", "Core"),
-  R("Russian Twist", "Core"),
-  R("Ab Wheel Rollout", "Core"),
-  R("Dead Bug", "Core"),
-  R("Bicycle Crunch", "Core"),
-  T("Mountain Climbers", "Core"),
+  // ---------- Glutes ----------
+  D("Dumbbell Hip Thrust", "Glutes"),
+  D("Dumbbell Sumo Squat", "Glutes"),
+  D("Dumbbell Reverse Lunge", "Glutes"),
+  B("Glute Bridge", "Glutes"),
+  B("Single-Leg Glute Bridge", "Glutes"),
+  B("Donkey Kick", "Glutes"),
+  B("Glute Bridge Hold", "Glutes", "time"),
+
+  // ---------- Calves ----------
+  D("Dumbbell Standing Calf Raise", "Calves"),
+  D("Dumbbell Seated Calf Raise", "Calves"),
+  D("Dumbbell Single-Leg Calf Raise", "Calves"),
+  B("Bodyweight Calf Raise", "Calves"),
+  B("Stair Calf Raise", "Calves"),
+  B("Calf Raise Hold", "Calves", "time"),
+
+  // ---------- Rest & Recovery ----------
+  B("Walking", "Rest & Recovery", "time"),
+  B("Jogging", "Rest & Recovery", "time"),
+  B("Light Running", "Rest & Recovery", "time"),
+  B("Light Cycling", "Rest & Recovery", "time"),
+  B("Full Body Stretching", "Rest & Recovery", "time"),
+  B("Mobility Flow", "Rest & Recovery", "time"),
+  B("Cool-Down", "Rest & Recovery", "time"),
+  B("Active Recovery Session", "Rest & Recovery", "time"),
 ];
 
 export function exerciseMode(name: string): ExerciseMode {
