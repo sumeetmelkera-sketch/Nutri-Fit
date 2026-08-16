@@ -55,6 +55,7 @@ export function rowToProfile(r: any): Profile {
     experience: r.experience,
     workout_days: r.workout_days ?? [],
     trainer_id: r.trainer_id,
+    avatar_id: r.avatar_id ?? "a1",
     targets: r.targets?.calories
       ? r.targets
       : computeTargets({
