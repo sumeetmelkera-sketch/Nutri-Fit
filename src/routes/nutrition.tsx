@@ -178,7 +178,14 @@ function NutritionBody() {
               <X className="h-4 w-4" />
             </button>
           </div>
-          <NutritionEditor value={draft} onChange={setDraft} />
+          <NutritionFacts value={draft} />
+          {draft.items?.length ? (
+            <ul className="space-y-1 text-[11px] text-muted-foreground">
+              {draft.items.map((it) => (
+                <li key={it}>• {it}</li>
+              ))}
+            </ul>
+          ) : null}
           {draft.micros?.length ? (
             <div className="flex flex-wrap gap-1.5">
               {draft.micros.map((mi) => (
@@ -189,7 +196,8 @@ function NutritionBody() {
             </div>
           ) : null}
           <p className="text-[11px] leading-snug text-muted-foreground">
-            Estimates only — portions, brands and recipes vary. Edit any value before saving.
+            Estimates only — portions, brands and recipes vary. To change the numbers, edit your
+            food description or quantity and analyze again.
           </p>
           <button
             onClick={commit}
