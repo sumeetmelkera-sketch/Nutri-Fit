@@ -266,16 +266,36 @@ function NutritionBody() {
 
 function EditSheet({
   meal,
+  keypass,
   onClose,
   onSave,
 }: {
   meal: Meal;
+  keypass: string;
   onClose: () => void;
-  onSave: (n: Nutrition, type: MealType) => Promise<void>;
+  onSave: (n: Nutrition, type: MealType, description: string) => Promise<void>;
 }) {
   const [value, setValue] = useState<Nutrition>({ ...EMPTY_NUTRITION, ...meal.nutrition });
+  const [description, setDescription] = useState(meal.description);
   const [type, setType] = useState<MealType>(meal.meal_type);
   const [busy, setBusy] = useState(false);
+  const [recalculating, setRecalculating] = useState(false);
+  const dirty = description.trim() !== meal.description.trim();
+
+  async function recalculate() {
+    if (description.trim().length < 2) return;
+    setRecalculating(true);
+    try {
+      const n = await analyzeMeal({ data: { keypass, text: description.trim() } });
+      setValue({ ...EMPTY_NUTRITION, ...(n as Nutrition) });
+      toast.success("Nutrition recalculated");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setRecalculating(false);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-end bg-background/70 backdrop-blur-sm" onClick={onClose}>
       <div
@@ -283,11 +303,12 @@ function EditSheet({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
-          <p className="truncate text-sm font-bold">{meal.description}</p>
+          <p className="text-sm font-bold">Edit meal</p>
           <button onClick={onClose} className="press text-muted-foreground" aria-label="Close">
             <X className="h-4 w-4" />
           </button>
         </div>
+
         <div className="mb-4 flex gap-1 rounded-2xl bg-elevated p-1">
           {MEAL_TYPES.map((m) => (
             <button
@@ -302,15 +323,41 @@ function EditSheet({
             </button>
           ))}
         </div>
-        <NutritionEditor value={value} onChange={setValue} />
+
+        <label className="mb-2 block space-y-1.5">
+          <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+            Food & quantity
+          </span>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value.slice(0, 400))}
+            rows={2}
+            className="input-nf resize-none"
+          />
+        </label>
+        <button
+          onClick={recalculate}
+          disabled={recalculating || !dirty}
+          className="press mb-4 flex w-full items-center justify-center gap-2 rounded-full border border-border py-2.5 text-xs font-semibold disabled:opacity-40"
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          {recalculating ? "Recalculating…" : "Recalculate nutrition"}
+        </button>
+
+        <NutritionFacts value={value} />
+        <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+          Nutrition values are calculated automatically and can't be edited by hand. Change the food
+          or quantity above and recalculate.
+        </p>
+
         <button
           onClick={async () => {
             setBusy(true);
-            await onSave(value, type);
+            await onSave(value, type, description.trim() || meal.description);
             setBusy(false);
           }}
-          disabled={busy}
-          className="press energy-bg mt-4 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-bold text-primary-foreground"
+          disabled={busy || recalculating}
+          className="press energy-bg mt-4 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-bold text-primary-foreground disabled:opacity-40"
         >
           <Check className="h-4 w-4" /> Save changes
         </button>
@@ -322,36 +369,27 @@ function EditSheet({
 const FIELDS: { key: keyof Nutrition; label: string; unit: string }[] = [
   { key: "calories", label: "Calories", unit: "kcal" },
   { key: "protein", label: "Protein", unit: "g" },
-  { key: "carbs", label: "Carbs", unit: "g" },
+  { key: "carbs", label: "Carbohydrates", unit: "g" },
   { key: "fat", label: "Fat", unit: "g" },
   { key: "fiber", label: "Fiber", unit: "g" },
   { key: "sugar", label: "Sugar", unit: "g" },
-  { key: "satFat", label: "Sat. fat", unit: "g" },
+  { key: "satFat", label: "Saturated fat", unit: "g" },
   { key: "sodium", label: "Sodium", unit: "mg" },
 ];
 
-function NutritionEditor({
-  value,
-  onChange,
-}: {
-  value: Nutrition;
-  onChange: (n: Nutrition) => void;
-}) {
+/** Calculated values are read-only by design — they always follow the description. */
+function NutritionFacts({ value }: { value: Nutrition }) {
   return (
     <div className="grid grid-cols-2 gap-2">
       {FIELDS.map((f) => (
-        <label key={f.key} className="rounded-2xl bg-elevated px-3 py-2">
+        <div key={f.key} className="rounded-2xl bg-elevated px-3 py-2">
           <span className="block text-[10px] uppercase tracking-widest text-muted-foreground">
             {f.label} ({f.unit})
           </span>
-          <input
-            type="number"
-            inputMode="decimal"
-            value={String(value[f.key] ?? 0)}
-            onChange={(e) => onChange({ ...value, [f.key]: Math.max(0, +e.target.value || 0) })}
-            className="w-full bg-transparent text-base font-semibold outline-none"
-          />
-        </label>
+          <span className="text-base font-semibold">
+            {Math.round(((value[f.key] as number) ?? 0) * 10) / 10}
+          </span>
+        </div>
       ))}
     </div>
   );
