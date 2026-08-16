@@ -248,9 +248,12 @@ function NutritionBody() {
       {editing ? (
         <EditSheet
           meal={editing}
+          keypass={keypass}
           onClose={() => setEditing(null)}
-          onSave={async (nutrition, meal_type) => {
-            await updateMeal({ data: { keypass: keypass!, id: editing.id, nutrition, meal_type } });
+          onSave={async (nutrition, meal_type, description) => {
+            await updateMeal({
+              data: { keypass: keypass!, id: editing.id, nutrition, meal_type, description },
+            });
             await refresh();
             setEditing(null);
             toast.success("Meal updated");
