@@ -68,6 +68,12 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Decline Push-Up", "Chest"),
   B("Wide Push-Up", "Chest"),
   B("Chest Dip", "Chest"),
+  D("Dumbbell Squeeze Press", "Chest"),
+  D("Dumbbell Decline Press", "Chest"),
+  D("Dumbbell Incline Fly", "Chest"),
+  B("Archer Push-Up", "Chest"),
+  B("Explosive Push-Up", "Chest"),
+  B("Push-Up Hold", "Chest", "time"),
 
   // ---------- Back ----------
   D("Single-Arm Dumbbell Row", "Back"),
@@ -80,6 +86,12 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Superman", "Back"),
   B("Back Extension", "Back"),
   B("Dead Hang", "Back", "time"),
+  D("Chest-Supported Dumbbell Row", "Back"),
+  D("Dumbbell Reverse Fly", "Back"),
+  D("Renegade Row", "Back"),
+  B("Wide-Grip Pull-Up", "Back"),
+  B("Australian Row", "Back"),
+  B("Scapular Pull-Up", "Back"),
 
   // ---------- Shoulders ----------
   D("Dumbbell Shoulder Press", "Shoulders"),
@@ -90,6 +102,11 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Pike Push-Up", "Shoulders"),
   B("Wall Handstand Hold", "Shoulders", "time"),
   B("Arm Circles", "Shoulders", "time"),
+  D("Dumbbell Upright Row", "Shoulders"),
+  D("Dumbbell Push Press", "Shoulders"),
+  D("Dumbbell Y-Raise", "Shoulders"),
+  B("Wall Walk", "Shoulders"),
+  B("Elevated Pike Push-Up", "Shoulders"),
 
   // ---------- Biceps ----------
   D("Dumbbell Curl", "Biceps"),
@@ -98,6 +115,10 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   D("Concentration Curl", "Biceps"),
   B("Chin-Up (Biceps Focus)", "Biceps"),
   B("Towel Curl (Isometric)", "Biceps", "time"),
+  D("Zottman Curl", "Biceps"),
+  D("Preacher Dumbbell Curl", "Biceps"),
+  D("Cross-Body Hammer Curl", "Biceps"),
+  B("Underhand Inverted Row", "Biceps"),
 
   // ---------- Triceps ----------
   D("Overhead Dumbbell Extension", "Triceps"),
@@ -107,6 +128,10 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Diamond Push-Up", "Triceps"),
   B("Bench Dip", "Triceps"),
   B("Triceps Dip", "Triceps"),
+  D("Single-Arm Overhead Extension", "Triceps"),
+  D("Dumbbell Tate Press", "Triceps"),
+  B("Bodyweight Skull Crusher", "Triceps"),
+  B("Pseudo Planche Push-Up", "Triceps"),
 
   // ---------- Forearms ----------
   D("Dumbbell Wrist Curl", "Forearms"),
@@ -114,6 +139,10 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   D("Farmer's Carry", "Forearms", "time"),
   B("Dead Hang for Grip", "Forearms", "time"),
   B("Fingertip Push-Up", "Forearms"),
+  D("Dumbbell Hammer Hold", "Forearms", "time"),
+  D("Plate/Dumbbell Pinch Hold", "Forearms", "time"),
+  B("Towel Hang", "Forearms", "time"),
+  B("Wrist Rotations", "Forearms", "time"),
 
   // ---------- Core / Abs ----------
   D("Dumbbell Russian Twist", "Core"),
@@ -126,6 +155,13 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Leg Raise", "Core"),
   B("Bicycle Crunch", "Core"),
   B("Mountain Climbers", "Core", "time"),
+  D("Dumbbell Woodchopper", "Core"),
+  D("Dumbbell Suitcase Carry", "Core", "time"),
+  B("Plank Shoulder Taps", "Core"),
+  B("Flutter Kicks", "Core", "time"),
+  B("V-Up", "Core"),
+  B("Dead Bug", "Core"),
+  B("Reverse Crunch", "Core"),
 
   // ---------- Quads ----------
   D("Dumbbell Goblet Squat", "Quads"),
@@ -136,6 +172,11 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Split Squat", "Quads"),
   B("Jump Squat", "Quads"),
   B("Wall Sit", "Quads", "time"),
+  D("Dumbbell Bulgarian Split Squat", "Quads"),
+  D("Dumbbell Walking Lunge", "Quads"),
+  B("Pause Squat", "Quads"),
+  B("Reverse Lunge", "Quads"),
+  B("Step-Up (Bodyweight)", "Quads"),
 
   // ---------- Hamstrings ----------
   D("Dumbbell Romanian Deadlift", "Hamstrings"),
@@ -144,6 +185,10 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Nordic Curl", "Hamstrings"),
   B("Glute-Ham Bridge Walkout", "Hamstrings"),
   B("Good Morning (Bodyweight)", "Hamstrings"),
+  D("Dumbbell Good Morning", "Hamstrings"),
+  D("Dumbbell Sumo Deadlift", "Hamstrings"),
+  B("Single-Leg Hip Hinge", "Hamstrings"),
+  B("Hamstring Slider Curl", "Hamstrings"),
 
   // ---------- Glutes ----------
   D("Dumbbell Hip Thrust", "Glutes"),
@@ -153,6 +198,11 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Single-Leg Glute Bridge", "Glutes"),
   B("Donkey Kick", "Glutes"),
   B("Glute Bridge Hold", "Glutes", "time"),
+  D("Dumbbell Step-Through Lunge", "Glutes"),
+  D("Dumbbell Curtsy Lunge", "Glutes"),
+  B("Frog Pump", "Glutes"),
+  B("Fire Hydrant", "Glutes"),
+  B("Hip Abduction (Side-Lying)", "Glutes"),
 
   // ---------- Calves ----------
   D("Dumbbell Standing Calf Raise", "Calves"),
@@ -161,6 +211,9 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Bodyweight Calf Raise", "Calves"),
   B("Stair Calf Raise", "Calves"),
   B("Calf Raise Hold", "Calves", "time"),
+  D("Dumbbell Calf Raise (Elevated)", "Calves"),
+  B("Jump Rope", "Calves", "time"),
+  B("Tibialis Raise", "Calves"),
 
   // ---------- Rest & Recovery ----------
   B("Walking", "Rest & Recovery", "time"),
@@ -171,6 +224,12 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Mobility Flow", "Rest & Recovery", "time"),
   B("Cool-Down", "Rest & Recovery", "time"),
   B("Active Recovery Session", "Rest & Recovery", "time"),
+  B("Brisk Walk", "Rest & Recovery", "time"),
+  B("Foam Rolling", "Rest & Recovery", "time"),
+  B("Yoga Flow", "Rest & Recovery", "time"),
+  B("Deep Breathing", "Rest & Recovery", "time"),
+  B("Hip Mobility Drill", "Rest & Recovery", "time"),
+  B("Shoulder Mobility Drill", "Rest & Recovery", "time"),
 ];
 
 export function exerciseMode(name: string): ExerciseMode {

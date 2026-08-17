@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { LogOut, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { Card, Screen, SectionTitle } from "@/components/nf/Shell";
-import { askTrainer, updateProfile } from "@/lib/nutrifit.functions";
+import { askTrainer } from "@/lib/nutrifit.functions";
 import { useMealsFor, useNutriFit } from "@/lib/nf/store";
-import { TRAINERS, getTrainer } from "@/lib/nf/trainers";
+import { getTrainer } from "@/lib/nf/trainers";
 import { todayISO } from "@/lib/nf/shared";
 import { cn } from "@/lib/utils";
 
@@ -32,12 +32,11 @@ export const Route = createFileRoute("/trainer")({
 type Msg = { role: "user" | "assistant"; content: string };
 
 function TrainerBody() {
-  const { state, keypass, refresh, signOut } = useNutriFit();
+  const { state, keypass } = useNutriFit();
   const { totals } = useMealsFor();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
-  const [switching, setSwitching] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -79,20 +78,6 @@ function TrainerBody() {
     }
   }
 
-  async function chooseTrainer(id: string) {
-    setSwitching(true);
-    try {
-      await updateProfile({ data: { keypass: keypass!, patch: { trainer_id: id } } });
-      await refresh();
-      setMessages([]);
-      toast.success(`${getTrainer(id).name} is now your trainer`);
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setSwitching(false);
-    }
-  }
-
   const prompts = [
     "How is my week going?",
     "What should I eat tonight?",
@@ -117,31 +102,6 @@ function TrainerBody() {
           <p className="mt-1 text-xs leading-snug text-muted-foreground">{trainer.personality}</p>
         </div>
       </Card>
-
-      <SectionTitle>Choose your trainer</SectionTitle>
-      <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1">
-        {TRAINERS.map((t) => (
-          <button
-            key={t.id}
-            disabled={switching}
-            onClick={() => chooseTrainer(t.id)}
-            className={cn(
-              "press w-20 shrink-0 space-y-1.5 rounded-2xl border p-1.5",
-              t.id === trainer.id ? "border-primary bg-primary/10" : "border-border bg-card",
-            )}
-          >
-            <img
-              src={t.image}
-              alt={t.name}
-              width={68}
-              height={68}
-              loading="lazy"
-              className="h-16 w-full rounded-xl object-cover"
-            />
-            <span className="block text-[11px] font-semibold">{t.name}</span>
-          </button>
-        ))}
-      </div>
 
       <SectionTitle>Conversation</SectionTitle>
       <Card className="space-y-3">
@@ -202,16 +162,10 @@ function TrainerBody() {
         </button>
       </div>
 
-      <p className="pb-2 text-center text-[11px] text-muted-foreground">
+      <p className="pb-6 text-center text-[11px] text-muted-foreground">
         Guidance only — not medical advice.
       </p>
 
-      <button
-        onClick={signOut}
-        className="press mb-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-border py-3 text-xs font-semibold text-muted-foreground"
-      >
-        <LogOut className="h-3.5 w-3.5" /> Sign out / switch Keypass
-      </button>
     </>
   );
 }

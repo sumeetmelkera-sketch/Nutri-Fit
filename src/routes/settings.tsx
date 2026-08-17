@@ -156,17 +156,33 @@ function SettingsBody() {
         </Field>
 
         <Field label="Activity">
-          <select
-            value={p.activity}
-            onChange={(e) => patch({ activity: e.target.value as Activity })}
-            className="input-nf"
-          >
-            {(Object.keys(ACTIVITY_LABELS) as Activity[]).map((a) => (
-              <option key={a} value={a}>
-                {ACTIVITY_LABELS[a]}
-              </option>
-            ))}
-          </select>
+          <div className="grid gap-1.5">
+            {(Object.keys(ACTIVITY_LABELS) as Activity[]).map((a) => {
+              const [head, sub] = ACTIVITY_LABELS[a].split(" — ");
+              const on = p.activity === a;
+              return (
+                <button
+                  key={a}
+                  onClick={() => patch({ activity: a })}
+                  className={cn(
+                    "press flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-left",
+                    on ? "border-primary bg-primary/10" : "border-border",
+                  )}
+                >
+                  <span className="min-w-0">
+                    <span className="block text-xs font-semibold">{head}</span>
+                    <span className="block truncate text-[10px] text-muted-foreground">{sub}</span>
+                  </span>
+                  <span
+                    className={cn(
+                      "h-3.5 w-3.5 shrink-0 rounded-full border",
+                      on ? "energy-bg border-transparent" : "border-border",
+                    )}
+                  />
+                </button>
+              );
+            })}
+          </div>
         </Field>
 
         <Field label="Experience">
@@ -284,6 +300,13 @@ function SettingsBody() {
         </Field>
       </Card>
 
+      <button
+        onClick={saveBasics}
+        className="press energy-bg w-full rounded-full py-3.5 text-sm font-bold text-primary-foreground"
+      >
+        Save changes
+      </button>
+
       {/* Data */}
       <SectionTitle>Data & Keypass</SectionTitle>
       <Card className="space-y-3">
@@ -319,8 +342,12 @@ function SettingsBody() {
       {/* About */}
       <SectionTitle>About</SectionTitle>
       <Card className="mb-4 space-y-1 text-sm">
-        <p className="font-semibold">NutriFit — Train. Eat. Improve.</p>
+        <p className="font-semibold">NutriFit : Train. Eat. Improve</p>
         <p className="text-xs text-muted-foreground">Version 1.0</p>
+        <p className="text-xs text-muted-foreground">
+          A simple fitness app to track food, calories, nutrients, workouts, and progress in daily
+          life.
+        </p>
         <p className="text-xs text-muted-foreground">Created by Sumeeth Ashok Melkera</p>
       </Card>
     </>

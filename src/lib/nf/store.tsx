@@ -91,7 +91,9 @@ export function NutriFitProvider({ children }: { children: React.ReactNode }) {
     queryKey: ["nf-state", keypass],
     enabled: !!keypass,
     queryFn: async () => (await getState({ data: { keypass: keypass! } })) as unknown as StateShape,
-    staleTime: 10_000,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    placeholderData: (prev: unknown) => prev as StateShape | undefined,
   });
 
   const signIn = useCallback(
@@ -139,7 +141,10 @@ export function useNutriFit() {
 
 export function useMealsFor(date = todayISO()) {
   const { state } = useNutriFit();
-  const meals = (state?.meals ?? []).filter((m) => m.log_date === date);
+  const meals = (state?.meals ?? [])
+    .filter((m) => m.log_date === date)
+    .slice()
+    .sort((a, b) => String(b.created_at ?? "").localeCompare(String(a.created_at ?? "")));
   const totals: Nutrition = sumNutrition(meals.map((m) => m.nutrition));
   return { meals, totals };
 }

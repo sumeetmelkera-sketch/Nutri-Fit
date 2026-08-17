@@ -51,6 +51,50 @@ const FOODS: Food[] = [
   { keys: ["bread", "toast"], per: [75, 2.5, 14, 1], unit: "1 slice" },
   { keys: ["oats"], per: [190, 7, 32, 3.5], unit: "1 bowl" },
   { keys: ["salad"], per: [70, 2, 10, 2], unit: "1 bowl" },
+  { keys: ["vada pav"], per: [300, 7, 44, 11], unit: "1 vada pav" },
+  { keys: ["pav bhaji"], per: [400, 9, 50, 18], unit: "1 plate" },
+  { keys: ["pav", "bun"], per: [110, 3, 20, 2], unit: "1 pav" },
+  { keys: ["masala dosa"], per: [290, 6, 42, 11], unit: "1 dosa" },
+  { keys: ["uttapam"], per: [230, 6, 36, 7], unit: "1 uttapam" },
+  { keys: ["chole bhature", "bhature", "bhatura"], per: [430, 9, 48, 22], unit: "1 bhatura" },
+  { keys: ["puri", "poori"], per: [105, 2, 12, 5.5], unit: "1 puri" },
+  { keys: ["thepla"], per: [130, 3, 18, 5], unit: "1 thepla" },
+  { keys: ["litti"], per: [180, 5, 26, 6], unit: "1 litti" },
+  { keys: ["dhokla"], per: [90, 3, 13, 2.5], unit: "1 piece" },
+  { keys: ["chilla", "cheela", "besan chilla"], per: [140, 6, 16, 6], unit: "1 chilla" },
+  { keys: ["misal"], per: [380, 14, 44, 16], unit: "1 plate" },
+  { keys: ["curd rice", "dahi chawal"], per: [280, 8, 44, 8], unit: "1 bowl" },
+  { keys: ["paneer bhurji"], per: [270, 14, 9, 20], unit: "1 katori" },
+  { keys: ["paneer tikka"], per: [230, 15, 7, 16], unit: "1 plate" },
+  { keys: ["omelette", "omlet", "omlette"], per: [160, 11, 2, 12], unit: "1 omelette" },
+  { keys: ["boiled egg", "ubla anda"], per: [78, 6, 0.6, 5], unit: "1 egg" },
+  { keys: ["chicken breast"], per: [165, 31, 0, 3.6], unit: "100 g" },
+  { keys: ["tandoori chicken"], per: [260, 28, 4, 14], unit: "1 plate" },
+  { keys: ["soya", "soya chunks"], per: [180, 22, 12, 2], unit: "1 katori" },
+  { keys: ["tofu"], per: [150, 15, 4, 9], unit: "1 katori" },
+  { keys: ["peanut", "moongfali", "groundnut"], per: [160, 7, 6, 14], unit: "1 handful" },
+  { keys: ["almond", "badam"], per: [70, 2.5, 2.5, 6], unit: "10 almonds" },
+  { keys: ["dry fruits", "nuts"], per: [180, 5, 14, 12], unit: "1 handful" },
+  { keys: ["whey", "protein shake", "protein powder"], per: [130, 24, 4, 2], unit: "1 scoop" },
+  { keys: ["chaas", "buttermilk"], per: [60, 3, 5, 3], unit: "1 glass" },
+  { keys: ["coconut water", "nariyal pani"], per: [60, 1, 13, 0.2], unit: "1 glass" },
+  { keys: ["juice"], per: [130, 1, 32, 0.3], unit: "1 glass" },
+  { keys: ["cold drink", "soda", "coke", "pepsi"], per: [150, 0, 39, 0], unit: "1 glass" },
+  { keys: ["ghee"], per: [112, 0, 0, 12.7], unit: "1 tbsp" },
+  { keys: ["butter", "makhan"], per: [102, 0.1, 0, 11.5], unit: "1 tbsp" },
+  { keys: ["cheese"], per: [80, 5, 1, 6.5], unit: "1 slice" },
+  { keys: ["corn", "bhutta", "makka"], per: [130, 4, 28, 1.5], unit: "1 corn" },
+  { keys: ["sweet potato", "shakarkandi"], per: [130, 2, 30, 0.2], unit: "1 medium" },
+  { keys: ["jalebi"], per: [150, 1, 26, 5], unit: "1 piece" },
+  { keys: ["rasgulla", "rasmalai"], per: [140, 4, 22, 4], unit: "1 piece" },
+  { keys: ["barfi", "burfi"], per: [170, 4, 20, 8], unit: "1 piece" },
+  { keys: ["noodles", "maggi", "hakka"], per: [350, 8, 50, 13], unit: "1 plate" },
+  { keys: ["pasta"], per: [400, 12, 58, 13], unit: "1 plate" },
+  { keys: ["pizza"], per: [280, 11, 32, 11], unit: "1 slice" },
+  { keys: ["burger"], per: [400, 15, 42, 18], unit: "1 burger" },
+  { keys: ["sandwich"], per: [280, 9, 36, 10], unit: "1 sandwich" },
+  { keys: ["thali"], per: [750, 24, 100, 26], unit: "1 thali" },
+  { keys: ["kanda", "onion"], per: [45, 1, 10, 0.2], unit: "1 onion" },
 ];
 
 const WORD_NUM: Record<string, number> = {
@@ -98,7 +142,12 @@ export function estimateFoodOffline(text: string): Nutrition {
   const items: string[] = [];
 
   for (const seg of segments) {
-    const food = FOODS.find((f) => f.keys.some((k) => seg.includes(k)));
+    const food = FOODS.slice()
+      .sort(
+        (a, b) =>
+          Math.max(...b.keys.map((k) => k.length)) - Math.max(...a.keys.map((k) => k.length)),
+      )
+      .find((f) => f.keys.some((k) => seg.includes(k)));
     if (!food) continue;
     const qty = Math.min(20, Math.max(0.25, quantityFor(seg) * portionScale(seg)));
     const [kc, p, c, f] = food.per;

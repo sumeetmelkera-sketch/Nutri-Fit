@@ -61,15 +61,17 @@ function PlanBody() {
   }
 
   async function persist() {
+    setDirty(false);
+    toast.success("Plan saved");
     try {
       await savePlan({ data: { keypass: keypass!, days: plan } });
-      await refresh();
-      setDirty(false);
-      toast.success("Plan saved");
+      void refresh();
     } catch (e) {
+      setDirty(true);
       toast.error((e as Error).message);
     }
   }
+
 
   function move(index: number, dir: -1 | 1) {
     const list = [...current.exercises];
@@ -222,17 +224,22 @@ function PlanBody() {
         </div>
       )}
 
-      <div className="h-2" />
-      {dirty ? (
-        <button
-          onClick={persist}
-          className="press energy-bg sticky bottom-24 mb-4 w-full rounded-full py-3.5 text-sm font-bold text-primary-foreground"
-        >
-          Save plan
-        </button>
-      ) : (
-        <div className="pb-4" />
-      )}
+      {/* Space so content is never hidden behind the fixed save bar */}
+      <div className="h-20" />
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 pb-[calc(env(safe-area-inset-bottom)+4rem)]">
+        <div className="mx-auto max-w-md py-1 pl-5 pr-[4.75rem]">
+          <button
+            onClick={persist}
+            disabled={!dirty}
+            className={cn(
+              "press energy-bg pointer-events-auto w-full rounded-full py-3.5 text-sm font-bold text-primary-foreground shadow-lg shadow-black/40 transition-opacity",
+              !dirty && "opacity-40",
+            )}
+          >
+            {dirty ? "Save plan" : "Plan saved"}
+          </button>
+        </div>
+      </div>
 
       {picker ? (
         <ExercisePicker
@@ -241,7 +248,6 @@ function PlanBody() {
             setDayValue({
               title: current.title || defaultTitle(muscle),
               exercises: [
-                ...current.exercises,
                 {
                   id: crypto.randomUUID(),
                   name,
@@ -253,8 +259,10 @@ function PlanBody() {
                   weight: 0,
                   rest: 90,
                 },
+                ...current.exercises,
               ],
             });
+
             setPicker(false);
           }}
         />
@@ -348,13 +356,13 @@ function ExercisePicker({
           ))}
         </div>
         </div>
-        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           {(["dumbbell", "none"] as const).map((eq) => {
             const group = list.filter((e) => e.equipment === eq);
             if (!group.length) return null;
             return (
               <div key={eq} className="space-y-1.5">
-                <p className="sticky top-0 bg-card py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+                <p className="px-1 pb-0.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
                   {EQUIPMENT_LABELS[eq]}
                 </p>
                 {group.map((e) => (
