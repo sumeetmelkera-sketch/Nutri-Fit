@@ -224,13 +224,13 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
   B("Mobility Flow", "Rest & Recovery", "time"),
   B("Cool-Down", "Rest & Recovery", "time"),
   B("Active Recovery Session", "Rest & Recovery", "time"),
-];
   B("Brisk Walk", "Rest & Recovery", "time"),
   B("Foam Rolling", "Rest & Recovery", "time"),
   B("Yoga Flow", "Rest & Recovery", "time"),
   B("Deep Breathing", "Rest & Recovery", "time"),
   B("Hip Mobility Drill", "Rest & Recovery", "time"),
   B("Shoulder Mobility Drill", "Rest & Recovery", "time"),
+];
 
 export function exerciseMode(name: string): ExerciseMode {
   return EXERCISE_LIBRARY.find((e) => e.name === name)?.mode ?? "reps";
