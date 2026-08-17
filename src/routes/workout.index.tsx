@@ -61,15 +61,17 @@ function PlanBody() {
   }
 
   async function persist() {
+    setDirty(false);
+    toast.success("Plan saved");
     try {
       await savePlan({ data: { keypass: keypass!, days: plan } });
-      await refresh();
-      setDirty(false);
-      toast.success("Plan saved");
+      void refresh();
     } catch (e) {
+      setDirty(true);
       toast.error((e as Error).message);
     }
   }
+
 
   function move(index: number, dir: -1 | 1) {
     const list = [...current.exercises];
