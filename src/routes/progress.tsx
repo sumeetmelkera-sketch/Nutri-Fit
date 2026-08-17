@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Award, Camera, Plus, Trophy } from "lucide-react";
+import { Camera, Plus } from "lucide-react";
 import { toast } from "sonner";
 import {
   Area,
@@ -18,7 +18,7 @@ import { AnimatedNumber } from "@/components/nf/Ring";
 import { saveMeasurement } from "@/lib/nutrifit.functions";
 import { useNutriFit } from "@/lib/nf/store";
 import { weeklySummary } from "@/lib/nf/coach";
-import { ACHIEVEMENTS, todayISO } from "@/lib/nf/shared";
+import { todayISO } from "@/lib/nf/shared";
 import { getTrainer } from "@/lib/nf/trainers";
 import { cn } from "@/lib/utils";
 
@@ -41,8 +41,6 @@ export const Route = createFileRoute("/progress")({
     </Screen>
   ),
 });
-
-const MEASURE_FIELDS = ["chest", "waist", "hips", "arm", "thigh"] as const;
 
 function ProgressBody() {
   const { state, keypass, refresh } = useNutriFit();
@@ -101,7 +99,6 @@ function ProgressBody() {
 
   if (!state || !keypass || !data) return null;
   const trainer = getTrainer(state.profile.trainer_id);
-  const earned = new Set(state.achievements.map((a) => a.code));
 
   return (
     <>
@@ -197,33 +194,6 @@ function ProgressBody() {
         )}
       </Card>
 
-      <SectionTitle>Measurements</SectionTitle>
-      <Card className="grid grid-cols-3 gap-3">
-        {MEASURE_FIELDS.map((f) => {
-          const last = [...state.measurements].reverse().find((m) => m.metrics?.[f]);
-          return (
-            <div key={f}>
-              <p className="text-[11px] capitalize text-muted-foreground">{f}</p>
-              <p className="text-base font-bold">{last ? `${last.metrics[f]} cm` : "—"}</p>
-            </div>
-          );
-        })}
-      </Card>
-
-      <SectionTitle>Achievements</SectionTitle>
-      <div className="grid grid-cols-2 gap-3 pb-4">
-        {ACHIEVEMENTS.map((a) => {
-          const has = earned.has(a.code);
-          return (
-            <Card key={a.code} className={cn("space-y-1 p-3.5", !has && "opacity-45")}>
-              {has ? <Trophy className="h-4 w-4 text-primary" /> : <Award className="h-4 w-4 text-muted-foreground" />}
-              <p className="text-sm font-semibold">{a.title}</p>
-              <p className="text-[11px] text-muted-foreground">{a.detail}</p>
-            </Card>
-          );
-        })}
-      </div>
-
       {open ? (
         <LogSheet
           onClose={() => setOpen(false)}
@@ -260,7 +230,6 @@ function LogSheet({
   onSave: (w: number | null, m: Record<string, number>, photo: string | null) => Promise<void>;
 }) {
   const [weight, setWeight] = useState("");
-  const [metrics, setMetrics] = useState<Record<string, string>>({});
   const [photo, setPhoto] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -270,7 +239,7 @@ function LogSheet({
         className="rise max-h-[88vh] w-full overflow-y-auto rounded-t-3xl border-t border-border bg-card p-5 pb-8"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="mb-4 text-lg font-bold">Log progress</p>
+        <p className="mb-4 text-lg font-bold">Log body weight</p>
         <label className="mb-3 block rounded-2xl bg-elevated px-3 py-2">
           <span className="block text-[10px] uppercase tracking-widest text-muted-foreground">Weight (kg)</span>
           <input
@@ -282,22 +251,6 @@ function LogSheet({
             placeholder="—"
           />
         </label>
-        <div className="grid grid-cols-2 gap-2">
-          {MEASURE_FIELDS.map((f) => (
-            <label key={f} className="rounded-2xl bg-elevated px-3 py-2">
-              <span className="block text-[10px] uppercase tracking-widest text-muted-foreground">{f} (cm)</span>
-              <input
-                type="number"
-                inputMode="decimal"
-                value={metrics[f] ?? ""}
-                onChange={(e) => setMetrics({ ...metrics, [f]: e.target.value })}
-                className="w-full bg-transparent text-base font-semibold outline-none"
-                placeholder="—"
-              />
-            </label>
-          ))}
-        </div>
-
         <label className="press mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-border py-3 text-xs font-semibold text-muted-foreground">
           <Camera className="h-4 w-4" />
           {photo ? "Photo attached" : "Add progress photo (optional)"}
@@ -325,9 +278,7 @@ function LogSheet({
         <button
           onClick={async () => {
             setBusy(true);
-            const parsed: Record<string, number> = {};
-            for (const [k, v] of Object.entries(metrics)) if (v) parsed[k] = Number(v);
-            await onSave(weight ? Number(weight) : null, parsed, photo);
+            await onSave(weight ? Number(weight) : null, {}, photo);
             setBusy(false);
           }}
           disabled={busy}
