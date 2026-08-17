@@ -224,17 +224,22 @@ function PlanBody() {
         </div>
       )}
 
-      <div className="h-2" />
-      {dirty ? (
-        <button
-          onClick={persist}
-          className="press energy-bg sticky bottom-24 mb-4 w-full rounded-full py-3.5 text-sm font-bold text-primary-foreground"
-        >
-          Save plan
-        </button>
-      ) : (
-        <div className="pb-4" />
-      )}
+      {/* Space so content is never hidden behind the fixed save bar */}
+      <div className="h-20" />
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 pb-[calc(env(safe-area-inset-bottom)+4.25rem)]">
+        <div className="mx-auto max-w-md px-5">
+          <button
+            onClick={persist}
+            disabled={!dirty}
+            className={cn(
+              "press energy-bg pointer-events-auto w-full rounded-full py-3.5 text-sm font-bold text-primary-foreground shadow-lg shadow-black/40 transition-opacity",
+              !dirty && "opacity-40",
+            )}
+          >
+            {dirty ? "Save plan" : "Plan saved"}
+          </button>
+        </div>
+      </div>
 
       {picker ? (
         <ExercisePicker
@@ -243,7 +248,6 @@ function PlanBody() {
             setDayValue({
               title: current.title || defaultTitle(muscle),
               exercises: [
-                ...current.exercises,
                 {
                   id: crypto.randomUUID(),
                   name,
@@ -255,8 +259,10 @@ function PlanBody() {
                   weight: 0,
                   rest: 90,
                 },
+                ...current.exercises,
               ],
             });
+
             setPicker(false);
           }}
         />
